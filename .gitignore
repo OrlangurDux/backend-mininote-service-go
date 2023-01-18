@@ -1,0 +1,9 @@
+.vscode
+.env
+.env-test
+/mongodb
+/src/vendor
+/src/uploaded/*
+!/src/uploaded/.gitkeep
+.DS_Store
+.idea

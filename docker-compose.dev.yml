@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+  dev-service-mini-note:
+    container_name: 'dev-service-mini-note'
+    build: 
+      context: .
+      dockerfile: development.dockerfile
+    ports:
+      - '9077:9077'
+    volumes:
+      - ./src:/app
+      - ./.env-test:/app/.env
+    depends_on:
+      - dev-service-mini-note-mongo
+    restart: unless-stopped
+
+  dev-service-mini-note-mongo:
+    image: 'mongo:latest'
+    container_name: 'dev-service-mini-note-mongo'
+    ports:
+      - '27297:27017'
+    volumes:
+      - ./mongodb:/data/db
+    restart: unless-stopped
+
+networks:
+  default:
+    external:
+      name: mini_note_network

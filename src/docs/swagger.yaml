@@ -1,0 +1,860 @@
+basePath: /api/v1
+definitions:
+  Categories:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Category'
+        type: array
+      total:
+        type: integer
+    type: object
+  Category:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: string
+      sort:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  Error:
+    properties:
+      code:
+        example: 1
+        type: integer
+      message:
+        example: Note not found.
+        type: string
+    type: object
+  JWT:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      success:
+        type: boolean
+      token_type:
+        type: string
+    type: object
+  Note:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      note:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  Notes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Note'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  Request:
+    properties:
+      name:
+        example: Jhon Doe
+        type: string
+      phone:
+        example: "+79000000000"
+        type: string
+    type: object
+  UniversalDTO:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/Error'
+      status:
+        type: integer
+      success:
+        type: boolean
+    type: object
+host: localhost:9077
+info:
+  contact:
+    name: API Support
+  description: This is a backend server for service mini.note resource.
+  title: Mini Note RESTful API
+  version: "0.1"
+paths:
+  /categories:
+    get:
+      description: View categories list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Categories items list
+          schema:
+            allOf:
+            - $ref: '#/definitions/UniversalDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/Categories'
+              type: object
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Categories list
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Create category record
+      parameters:
+      - description: Category name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Category parent_id
+        in: formData
+        name: parent_id
+        type: string
+      - description: Category sort
+        in: formData
+        name: sort
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Create category item
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Category record
+      tags:
+      - Categories
+  /categories/{id}:
+    delete:
+      description: Delete category record
+      parameters:
+      - description: category id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Delete category record
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Category delete
+      tags:
+      - Categories
+    get:
+      description: View category element
+      parameters:
+      - description: category id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Category item
+          schema:
+            allOf:
+            - $ref: '#/definitions/UniversalDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/Category'
+              type: object
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Category element
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Update category record
+      parameters:
+      - description: category id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Category name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Category parent id
+        in: formData
+        name: parent_id
+        type: string
+      - description: Category sort
+        in: formData
+        name: sort
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Update category item
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Category record
+      tags:
+      - Categories
+  /notes:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: View notes list
+      parameters:
+      - description: Number page
+        in: query
+        name: page
+        type: string
+      - description: Number per page
+        in: query
+        name: per_page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Note items list
+          schema:
+            allOf:
+            - $ref: '#/definitions/UniversalDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/Notes'
+              type: object
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Notes list
+      tags:
+      - Note
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Create note record
+      parameters:
+      - description: Note title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Note body
+        in: formData
+        name: note
+        required: true
+        type: string
+      - description: Note category
+        in: formData
+        name: category_id
+        type: string
+      - description: Note status
+        enum:
+        - draft
+        - public
+        - archive
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Create note item
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Note record
+      tags:
+      - Note
+  /notes/{id}:
+    delete:
+      description: Delete note record
+      parameters:
+      - description: note id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Delete note record
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Note delete
+      tags:
+      - Note
+    get:
+      description: View note element
+      parameters:
+      - description: note id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Note item
+          schema:
+            allOf:
+            - $ref: '#/definitions/UniversalDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/Note'
+              type: object
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Note element
+      tags:
+      - Note
+    put:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Update note record
+      parameters:
+      - description: note id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Note title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Note body
+        in: formData
+        name: note
+        required: true
+        type: string
+      - description: Note status
+        enum:
+        - draft
+        - public
+        - archive
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Update note item
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Note record
+      tags:
+      - Note
+  /notes/search:
+    get:
+      description: Search note records
+      parameters:
+      - description: note search by q
+        format: text
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Search note items list
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Note search
+      tags:
+      - Note
+  /send/request:
+    post:
+      consumes:
+      - application/json
+      description: Send message to email
+      parameters:
+      - description: Request param
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: Send request
+      tags:
+      - Request
+  /users/check:
+    post:
+      description: Check exist user by email
+      parameters:
+      - description: Email
+        in: formData
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      summary: User check
+      tags:
+      - User
+  /users/forgot:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Recovery user password by email
+      parameters:
+      - description: Email
+        in: formData
+        name: email
+        type: string
+      - description: Restore Token
+        in: formData
+        name: restore_token
+        type: string
+      - description: New password
+        in: formData
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      summary: Forgot user password
+      tags:
+      - User
+  /users/login:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Authorization user account by email and password
+      parameters:
+      - description: Email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/JWT'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      summary: Login user account
+      tags:
+      - User
+  /users/password:
+    put:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Update user password for authorization
+      parameters:
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: User password
+      tags:
+      - User
+  /users/profile:
+    delete:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Delete user profile and notes information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: User delete
+      tags:
+      - User
+    get:
+      description: View user profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: User profile
+      tags:
+      - User
+    put:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Update user profile information
+      parameters:
+      - description: Name
+        in: formData
+        name: name
+        type: string
+      - description: Avatar
+        in: formData
+        name: avatar
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: User update
+      tags:
+      - User
+  /users/register:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Registration user by email and password
+      parameters:
+      - description: Email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      summary: Register user account
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

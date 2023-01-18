@@ -1,0 +1,27 @@
+version: '3.3'
+
+services:
+  service-mini-note:
+    container_name: 'service-mini-note'
+    build: .
+    ports:
+      - '9077:9077'
+    volumes:
+      - ./src:/app
+    restart: on-failure
+    depends_on:
+      - service-mini-note-mongo
+
+  service-mini-note-mongo:
+    image: 'mongo:latest'
+    container_name: 'service-mini-note-mongo'
+    ports:
+      - '27297:27017'
+    volumes:
+      - ./mongodb:/data/db
+    restart: always
+
+networks:
+  default:
+    external:
+      name: mini_note_network
