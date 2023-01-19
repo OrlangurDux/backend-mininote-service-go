@@ -43,7 +43,7 @@ func IsCheckJWTHS256(response http.ResponseWriter, request *http.Request) (bool,
 		if len(aToken) > 1 {
 			token, err := jwt.Parse(aToken[1], func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return false, fmt.Errorf("unexpected siging method: $v", token.Header["alg"])
+					return false, fmt.Errorf("unexpected siging method: %v", token.Header["alg"])
 				}
 				return mySigningKey, nil
 			})

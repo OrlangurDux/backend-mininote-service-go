@@ -8,15 +8,22 @@ on:
 
 jobs:
   test:
-
-    runs-on: ubuntu-20.04
+    strategy:
+      variables:
+        go-version: [ 1.17.x ]
+        os: [ ubuntu-20.04 ]
+        mongodb-version: [6.0.x]
+    runs-on: ${{ variables.os }}
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.17
+          go-version: ${{ variables.go-version }}
+
+      - name: Create environment
+        run: cd src/ && cp .env.default .env
 
       - name: Verify dependencies
         run: cd src/ && go mod verify
@@ -38,6 +45,11 @@ jobs:
 
       - name: Run golint
         run: cd src/ && golint ./...
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.3.0
+        with:
+          mongodb-version: ${{ variables.mongodb-version }}
 
       - name: Run tests
         run: cd src/ && go test -race -vet=off ./...
