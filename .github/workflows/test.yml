@@ -23,7 +23,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Create environment
-        run: cd src/ && cp .env.default .env.test
+        run: cd src/ && cp .env.default .env-test
 
       - name: Verify dependencies
         run: cd src/ && go mod verify
