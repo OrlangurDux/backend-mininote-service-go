@@ -666,18 +666,23 @@ func getJWTToken() (string, error) {
 	client := routes.Routes()
 	client.ServeHTTP(rr, req)
 	if status := rr.Code; status != http.StatusOK {
-		err = errors.New(fmt.Sprintf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK))
+		sErr := fmt.Sprintf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+		err = errors.New(sErr)
 		return "", err
 	}
 	err = json.NewDecoder(rr.Body).Decode(&token)
 	if err != nil {
-		err = errors.New(fmt.Sprintf("error decode response: got %v",
-			rr.Body.String()))
+		sErr := fmt.Sprintf("error decode response: got %v",
+			rr.Body.String())
+		err = errors.New(sErr)
+		return "", err
 	}
 	if !token.Success {
-		err = errors.New(fmt.Sprintf("handler returned unexpected body: got %v",
-			rr.Body.String()))
+		sErr := fmt.Sprintf("handler returned unexpected body: got %v",
+			rr.Body.String())
+		err = errors.New(sErr)
+		return "", err
 	}
 	jwt := token.AccessToken
 	return jwt, nil
