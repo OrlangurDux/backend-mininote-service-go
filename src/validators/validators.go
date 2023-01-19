@@ -33,16 +33,12 @@ func ValidateInputs(dataSet interface{}) (bool, map[string][]string) {
 			switch err.Tag() {
 			case "required":
 				errors[name] = append(errors[name], "The "+name+" is required")
-				break
 			case "alpha":
 				errors[name] = append(errors[name], "The "+name+" should contain only letters")
-				break
 			case "eqfield":
 				errors[name] = append(errors[name], "The "+name+" should be equal to the "+err.Param())
-				break
 			default:
 				errors[name] = append(errors[name], "The "+name+" is invalid")
-				break
 			}
 		}
 		return false, errors
