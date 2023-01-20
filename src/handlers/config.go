@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -34,11 +33,6 @@ func DotEnvVariable(key string) string {
 		path, _ := os.Getwd()
 		config := strings.Split(path, "tests")[0] + ".env.test"
 		err := godotenv.Load(config)
-		fmt.Println(os.Getenv("SMTP_HOST"))
-		fmt.Println(os.Getenv("SMTP_LOGIN"))
-		fmt.Println(os.Getenv("SMTP_PASSWORD"))
-		fmt.Println(os.Getenv("SMTP_PORT"))
-		fmt.Println(os.Getenv("SMTP_TO"))
 		if err != nil {
 			log.Println(err)
 			log.Fatalf("Error loading %s file", config)
