@@ -36,7 +36,7 @@ type JWT struct {
 
 // User -> model user
 type User struct {
-	Id           primitive.ObjectID `json:"id" bson:"_id"`
+	ID           primitive.ObjectID `json:"id" bson:"_id"`
 	Name         string             `json:"name" bson:"name"`
 	Email        string             `json:"email" bson:"email"`
 	Password     string             `json:"-" bson:"password"`
@@ -50,7 +50,7 @@ type User struct {
 
 // Note -> model note
 type Note struct {
-	Id         primitive.ObjectID `json:"id" bson:"_id"`
+	ID         primitive.ObjectID `json:"id" bson:"_id"`
 	CategoryID primitive.ObjectID `json:"category_id" bson:"category_id"`
 	UserID     primitive.ObjectID `json:"user_id" bson:"user_id"`
 	Title      string             `json:"title" bson:"title"`
@@ -70,7 +70,7 @@ type Notes struct {
 
 // Category -> model category
 type Category struct {
-	Id       primitive.ObjectID `json:"id" bson:"_id"`
+	ID       primitive.ObjectID `json:"id" bson:"_id"`
 	ParentID primitive.ObjectID `json:"parent_id" bson:"parent_id"`
 	UserID   primitive.ObjectID `json:"user_id" bson:"user_id"`
 	Name     string             `json:"name" bson:"name"`

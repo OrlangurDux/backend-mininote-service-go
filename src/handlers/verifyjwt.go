@@ -54,10 +54,8 @@ func IsCheckJWTHS256(response http.ResponseWriter, request *http.Request) (bool,
 				return true, ""
 			}
 			return false, err.Error()
-		} else {
-			return false, "Invalid JWT token"
 		}
-
+		return false, "Invalid JWT token"
 	} else {
 		return false, "Not authorized"
 	}

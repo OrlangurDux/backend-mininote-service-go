@@ -49,7 +49,7 @@ func (c Controller) UserRegisterEndpoint(response http.ResponseWriter, request *
 
 	if err != nil {
 		hash := md5.Sum([]byte(password))
-		user.Id = primitive.NewObjectID()
+		user.ID = primitive.NewObjectID()
 		user.Email = email
 		user.Password = fmt.Sprintf("%x", hash)
 		user.Active = true
@@ -138,7 +138,7 @@ func (c Controller) UserLoginEndpoint(response http.ResponseWriter, request *htt
 	}
 
 	update := bson.M{"$set": bson.M{"authorized_at": time.Now()}}
-	_, err = collection.UpdateByID(context.TODO(), user.Id, update)
+	_, err = collection.UpdateByID(context.TODO(), user.ID, update)
 
 	if err != nil {
 		errors.Code = 70
@@ -191,7 +191,7 @@ func (c Controller) UserForgotEndpoint(response http.ResponseWriter, request *ht
 		}
 		hash := fmt.Sprintf("%x", md5.Sum([]byte(newPassword)))
 		update := bson.M{"$set": bson.M{"password": hash, "restore_token": ""}}
-		_, err = collection.UpdateByID(context.TODO(), user.Id, update)
+		_, err = collection.UpdateByID(context.TODO(), user.ID, update)
 		if err != nil {
 			errors.Code = 74
 			errors.Message = err.Error()

@@ -159,7 +159,7 @@ func (c Controller) NoteCreateEndpoint(response http.ResponseWriter, request *ht
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	record.Id = primitive.NewObjectID()
+	record.ID = primitive.NewObjectID()
 	record.Title = title
 	record.Note = note
 	record.Status = status

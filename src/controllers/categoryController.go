@@ -42,7 +42,7 @@ func (c Controller) CategoryCreateEndpoint(response http.ResponseWriter, request
 	parentID := request.FormValue("parent_id")
 	sort := request.FormValue("sort")
 
-	category.Id = primitive.NewObjectID()
+	category.ID = primitive.NewObjectID()
 	category.UserID, err = helpers.GetUserID()
 	if err != nil {
 		errors.Code = 475
