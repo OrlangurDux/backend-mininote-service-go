@@ -34,7 +34,8 @@ func DotEnvVariable(key string) string {
 		path, _ := os.Getwd()
 		config := strings.Split(path, "tests")[0] + ".env.test"
 		err := godotenv.Load(config)
-		fmt.Println(os.Getenv("TEST_VAR"))
+		fmt.Println(os.Getenv("SMTP_HOST"))
+		fmt.Println(os.Getenv("SMTP_LOGIN"))
 		if err != nil {
 			log.Println(err)
 			log.Fatalf("Error loading %s file", config)
