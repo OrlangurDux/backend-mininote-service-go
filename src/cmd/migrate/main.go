@@ -11,7 +11,6 @@ import (
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -69,7 +68,7 @@ func main() {
 		if len(os.Args) != 3 {
 			log.Fatalln("should be: new description-of-migration")
 		}
-		files, err := ioutil.ReadDir("./migrations")
+		files, err := os.ReadDir("./migrations")
 		if err != nil {
 			log.Fatal(err)
 		}
