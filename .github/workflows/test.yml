@@ -58,7 +58,7 @@ jobs:
         run: ls src/ -lha
 
       - name: Cat
-        run: cat /home/runner/work/backend-mininote-service-go/backend-mininote-service-go/src/.env.test
+        run: cat $(pwd)/src/.env.test
 
       - name: Run tests
         run: cd src/tests && go test -v -race -vet=off ./...

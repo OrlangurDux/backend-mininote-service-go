@@ -34,6 +34,7 @@ func DotEnvVariable(key string) string {
 		config := strings.Split(path, "tests")[0] + ".env.test"
 		err := godotenv.Load(config)
 		if err != nil {
+			log.Println(err)
 			log.Fatalf("Error loading %s file", config)
 		}
 		param = os.Getenv(key)
