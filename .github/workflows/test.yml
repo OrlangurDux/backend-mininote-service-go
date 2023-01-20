@@ -67,4 +67,5 @@ jobs:
           SMTP_PASSWORD: ${{secrets.SMTP_HOST}}
           SMTP_PORT: ${{vars.SMTP_PORT}}
           SMTP_TO: ${{vars.SMTP_TO}}
+          TEST_VAR: MySuperVar
         run: cd src/tests && go test -v -race -vet=off ./...
