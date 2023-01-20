@@ -56,9 +56,8 @@ func IsCheckJWTHS256(response http.ResponseWriter, request *http.Request) (bool,
 			return false, err.Error()
 		}
 		return false, "Invalid JWT token"
-	} else {
-		return false, "Not authorized"
 	}
+	return false, "Not authorized"
 }
 
 // IsCheckJWTRS256 -> check JWT token algorithm RS256

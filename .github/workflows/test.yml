@@ -51,6 +51,9 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
+      - name: PWD
+        run: pwd
+
       - name: LS
         run: ls src/ -lha
 
