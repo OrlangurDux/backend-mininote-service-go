@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Env -> switch config file cli --env variable
 var Env string
 
 // DotEnvVariable -> get .env

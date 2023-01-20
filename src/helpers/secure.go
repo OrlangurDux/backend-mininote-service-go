@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"errors"
 	"math/rand"
 	"strings"
 	"time"
@@ -13,11 +14,11 @@ import (
 func GetUserID() (primitive.ObjectID, error) {
 	if middlewares.ParseJwt["user"] != nil {
 		userObject := middlewares.ParseJwt["user"].(map[string]interface{})
-		userId, err := primitive.ObjectIDFromHex(userObject["id"].(string))
-		return userId, err
-	} else {
-		return primitive.ObjectID{}, nil
+		userID, err := primitive.ObjectIDFromHex(userObject["id"].(string))
+		return userID, err
 	}
+	err := errors.New("in JWT token not section 'user'")
+	return primitive.ObjectID{}, err
 }
 
 // RandomString -> generate random string

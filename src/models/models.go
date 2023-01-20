@@ -51,8 +51,8 @@ type User struct {
 // Note -> model note
 type Note struct {
 	Id         primitive.ObjectID `json:"id" bson:"_id"`
-	CategoryId primitive.ObjectID `json:"category_id" bson:"category_id"`
-	UserId     primitive.ObjectID `json:"user_id" bson:"user_id"`
+	CategoryID primitive.ObjectID `json:"category_id" bson:"category_id"`
+	UserID     primitive.ObjectID `json:"user_id" bson:"user_id"`
 	Title      string             `json:"title" bson:"title"`
 	Note       string             `json:"note" bson:"note"`
 	Status     string             `json:"status" bson:"status"`
@@ -60,6 +60,7 @@ type Note struct {
 	UpdatedAt  time.Time          `json:"updated_at" bson:"updated_at"`
 } //@name Note
 
+// Notes -> model notes
 type Notes struct {
 	Total   int64   `json:"total"`
 	Page    int64   `json:"page"`
@@ -67,14 +68,16 @@ type Notes struct {
 	Items   []*Note `json:"items"`
 } //@name Notes
 
+// Category -> model category
 type Category struct {
 	Id       primitive.ObjectID `json:"id" bson:"_id"`
-	ParentId primitive.ObjectID `json:"parent_id" bson:"parent_id"`
-	UserId   primitive.ObjectID `json:"user_id" bson:"user_id"`
+	ParentID primitive.ObjectID `json:"parent_id" bson:"parent_id"`
+	UserID   primitive.ObjectID `json:"user_id" bson:"user_id"`
 	Name     string             `json:"name" bson:"name"`
 	Sort     int                `json:"sort" bson:"sort"`
 } //@name Category
 
+// Categories -> model categories
 type Categories struct {
 	Total int         `json:"total"`
 	Items []*Category `json:"items"`

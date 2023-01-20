@@ -37,6 +37,7 @@ func IsAuthorized(next http.Handler) http.Handler {
 	})
 }
 
+// IsCheckJWTHS256 -> check JWT token algorithm HS256
 func IsCheckJWTHS256(response http.ResponseWriter, request *http.Request) (bool, string) {
 	if request.Header["Authorization"] != nil {
 		aToken := strings.Split(request.Header["Authorization"][0], " ")
@@ -51,9 +52,8 @@ func IsCheckJWTHS256(response http.ResponseWriter, request *http.Request) (bool,
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 				ParseJwt = claims
 				return true, ""
-			} else {
-				return false, err.Error()
 			}
+			return false, err.Error()
 		} else {
 			return false, "Invalid JWT token"
 		}
@@ -63,6 +63,7 @@ func IsCheckJWTHS256(response http.ResponseWriter, request *http.Request) (bool,
 	}
 }
 
+// IsCheckJWTRS256 -> check JWT token algorithm RS256
 func IsCheckJWTRS256(response http.ResponseWriter, request *http.Request) (bool, string) {
 	SecretKey := "-----BEGIN CERTIFICATE-----\n" + DotEnvVariable("JWT_SECRET") + "\n-----END CERTIFICATE-----"
 

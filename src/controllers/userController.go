@@ -292,7 +292,7 @@ func (c Controller) UserCheckByEmailEndpoint(response http.ResponseWriter, reque
 func (c Controller) UserProfileReadEndpoint(response http.ResponseWriter, request *http.Request) {
 	var user models.User
 	var errors models.Error
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 78
 		errors.Message = err.Error()
@@ -301,7 +301,7 @@ func (c Controller) UserProfileReadEndpoint(response http.ResponseWriter, reques
 	}
 
 	collection := c.MG.Database("notes").Collection("users")
-	filter := bson.M{"_id": userId}
+	filter := bson.M{"_id": userID}
 	err = collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		errors.Code = 80
@@ -334,27 +334,27 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 		errors.Message = err.Error()
 		middlewares.ErrorResponse(errors, response)
 		return
-	} else {
-		avatar, handler, err := request.FormFile("avatar")
-		if err == nil {
-			path, err := helpers.UploadAvatar(avatar, handler)
-			defer avatar.Close()
-			if err != nil {
-				errors.Code = 87
-				errors.Message = err.Error()
-				middlewares.ErrorResponse(errors, response)
-				return
-			}
-			data["avatar"] = path
+	}
+
+	avatar, handler, err := request.FormFile("avatar")
+	if err == nil {
+		path, err := helpers.UploadAvatar(avatar, handler)
+		defer avatar.Close()
+		if err != nil {
+			errors.Code = 87
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
 		}
-		for key, value := range request.PostForm {
-			if value[0] != "" {
-				data[key] = value[0]
-			}
+		data["avatar"] = path
+	}
+	for key, value := range request.PostForm {
+		if value[0] != "" {
+			data[key] = value[0]
 		}
 	}
 
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 90
 		errors.Message = err.Error()
@@ -363,7 +363,7 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 	}
 	collection := c.MG.Database("notes").Collection("users")
 	update := bson.M{"$set": data}
-	_, err = collection.UpdateByID(context.TODO(), userId, update)
+	_, err = collection.UpdateByID(context.TODO(), userID, update)
 	if err != nil {
 		errors.Code = 100
 		errors.Message = err.Error()
@@ -387,14 +387,14 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 // @Router       /users/profile [delete]
 func (c Controller) UserProfileDeleteEndpoint(response http.ResponseWriter, request *http.Request) {
 	var errors models.Error
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 120
 		errors.Message = err.Error()
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	filter := bson.M{"_id": userId}
+	filter := bson.M{"_id": userID}
 	collection := c.MG.Database("notes").Collection("users")
 	_, err = collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
@@ -403,7 +403,7 @@ func (c Controller) UserProfileDeleteEndpoint(response http.ResponseWriter, requ
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	filter = bson.M{"user_id": userId}
+	filter = bson.M{"user_id": userID}
 	collection = c.MG.Database("notes").Collection("notes")
 	_, err = collection.DeleteMany(context.TODO(), filter)
 	if err != nil {
@@ -447,7 +447,7 @@ func (c Controller) UserPasswordUpdateEndpoint(response http.ResponseWriter, req
 	}
 	password := request.PostFormValue("password")
 
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 140
 		errors.Message = err.Error()
@@ -458,7 +458,7 @@ func (c Controller) UserPasswordUpdateEndpoint(response http.ResponseWriter, req
 	hash := fmt.Sprintf("%x", md5.Sum([]byte(password)))
 	collection := c.MG.Database("notes").Collection("users")
 	update := bson.M{"$set": bson.M{"password": hash}}
-	_, err = collection.UpdateByID(context.TODO(), userId, update)
+	_, err = collection.UpdateByID(context.TODO(), userID, update)
 	if err != nil {
 		errors.Code = 150
 		errors.Message = err.Error()

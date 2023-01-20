@@ -32,8 +32,8 @@ var (
 	noteUpdDesc     = "Description test update"
 	noteStatus      = "public"
 	noteUpdStatus   = "draft"
-	noteId          = ""
-	categoryId      = ""
+	noteID          = ""
+	categoryID      = ""
 )
 
 func TestRegisterEndpoint(t *testing.T) {
@@ -332,7 +332,7 @@ func TestCategoryCreateEndpoint(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v", response)
 	}
 	data := response.Data.(map[string]interface{})
-	categoryId = data["id"].(string)
+	categoryID = data["id"].(string)
 }
 
 func TestCategoryUpdateEndpoint(t *testing.T) {
@@ -344,7 +344,7 @@ func TestCategoryUpdateEndpoint(t *testing.T) {
 	body := url.Values{}
 	body.Set("name", categoryUpdName)
 	body.Set("sort", categoryUpdSort)
-	req, err := http.NewRequest("PUT", "/api/v1/categories/"+categoryId, strings.NewReader(body.Encode()))
+	req, err := http.NewRequest("PUT", "/api/v1/categories/"+categoryID, strings.NewReader(body.Encode()))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -374,7 +374,7 @@ func TestCategoryReadEndpoint(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	req, err := http.NewRequest("GET", "/api/v1/categories/"+categoryId, nil)
+	req, err := http.NewRequest("GET", "/api/v1/categories/"+categoryID, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -430,7 +430,7 @@ func TestCategoryDeleteEndpoint(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	req, err := http.NewRequest("DELETE", "/api/v1/categories/"+categoryId, nil)
+	req, err := http.NewRequest("DELETE", "/api/v1/categories/"+categoryID, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -485,7 +485,7 @@ func TestNoteCreateEndpoint(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v", response)
 	}
 	data := response.Data.(map[string]interface{})
-	noteId = data["id"].(string)
+	noteID = data["id"].(string)
 }
 
 func TestNoteUpdateEndpoint(t *testing.T) {
@@ -498,7 +498,7 @@ func TestNoteUpdateEndpoint(t *testing.T) {
 	body.Set("title", noteUpdTitle)
 	body.Set("note", noteUpdDesc)
 	body.Set("status", noteUpdStatus)
-	req, err := http.NewRequest("PUT", "/api/v1/notes/"+noteId, strings.NewReader(body.Encode()))
+	req, err := http.NewRequest("PUT", "/api/v1/notes/"+noteID, strings.NewReader(body.Encode()))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -528,7 +528,7 @@ func TestNoteReadEndpoint(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	req, err := http.NewRequest("GET", "/api/v1/notes/"+noteId, nil)
+	req, err := http.NewRequest("GET", "/api/v1/notes/"+noteID, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -584,7 +584,7 @@ func TestNoteDeleteEndpoint(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	req, err := http.NewRequest("DELETE", "/api/v1/notes/"+noteId, nil)
+	req, err := http.NewRequest("DELETE", "/api/v1/notes/"+noteID, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

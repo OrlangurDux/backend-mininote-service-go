@@ -3,14 +3,15 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+	"io"
 	"net/http"
-	"reflect"
-	"strings"
-
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/helpers"
 	"orlangur.link/services/mini.note/models"
+	"reflect"
+	"strings"
 )
 
 // SendRequest godoc
@@ -29,29 +30,28 @@ import (
 func (c *Controller) SendRequest(response http.ResponseWriter, request *http.Request) {
 	var req models.Request
 	var errors models.Error
-	reqBody, _ := ioutil.ReadAll(request.Body)
+	reqBody, _ := io.ReadAll(request.Body)
 	request.Body.Close()
-	request.Body = ioutil.NopCloser(bytes.NewBuffer(reqBody))
+	request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
 	err := json.NewDecoder(request.Body).Decode(&req)
 	if err != nil {
-		request.Body = ioutil.NopCloser(bytes.NewBuffer(reqBody))
+		request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
 		if err = request.ParseForm(); err != nil {
 			errors.Code = 220
 			errors.Message = err.Error()
 			middlewares.ServerErrResponse(errors, response)
 			return
-		} else {
-			pointer := reflect.ValueOf(&req)
-			fields := pointer.Elem()
-			if fields.Kind() == reflect.Struct {
-				for k, v := range request.PostForm {
-					k = strings.Title(strings.ToLower(k))
-					field := fields.FieldByName(k)
-					if field.IsValid() {
-						if field.CanSet() {
-							if field.Kind() == reflect.String {
-								field.SetString(v[0])
-							}
+		}
+		pointer := reflect.ValueOf(&req)
+		fields := pointer.Elem()
+		if fields.Kind() == reflect.Struct {
+			for k, v := range request.PostForm {
+				k = cases.Title(language.Und, cases.NoLower).String(strings.ToLower(k))
+				field := fields.FieldByName(k)
+				if field.IsValid() {
+					if field.CanSet() {
+						if field.Kind() == reflect.String {
+							field.SetString(v[0])
 						}
 					}
 				}

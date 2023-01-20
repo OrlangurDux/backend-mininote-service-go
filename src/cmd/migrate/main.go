@@ -18,7 +18,10 @@ import (
 	"strings"
 )
 
+// Env -> switch config file MODE variable
 var Env string
+
+// Version -> print version with start program
 var Version = "development"
 
 func init() {
@@ -156,7 +159,6 @@ func DotEnvVariable(key string) string {
 				os.Exit(1)
 			}
 		}
-		return os.Getenv(key)
 	} else {
 		path, _ := os.Getwd()
 		err := godotenv.Load(strings.Split(path, "src")[0] + "/" + ".env.test")
@@ -164,6 +166,6 @@ func DotEnvVariable(key string) string {
 		if err != nil {
 			log.Fatalf("Error loading .env.test file")
 		}
-		return os.Getenv(key)
 	}
+	return os.Getenv(key)
 }

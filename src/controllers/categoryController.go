@@ -39,11 +39,11 @@ func (c Controller) CategoryCreateEndpoint(response http.ResponseWriter, request
 		return
 	}
 	name := request.FormValue("name")
-	parentId := request.FormValue("parent_id")
+	parentID := request.FormValue("parent_id")
 	sort := request.FormValue("sort")
 
 	category.Id = primitive.NewObjectID()
-	category.UserId, err = helpers.GetUserID()
+	category.UserID, err = helpers.GetUserID()
 	if err != nil {
 		errors.Code = 475
 		errors.Message = err.Error()
@@ -51,8 +51,8 @@ func (c Controller) CategoryCreateEndpoint(response http.ResponseWriter, request
 		return
 	}
 	category.Name = name
-	if parentId != "" {
-		category.ParentId, err = primitive.ObjectIDFromHex(parentId)
+	if parentID != "" {
+		category.ParentID, err = primitive.ObjectIDFromHex(parentID)
 		if err != nil {
 			errors.Code = 480
 			errors.Message = err.Error()
@@ -78,10 +78,10 @@ func (c Controller) CategoryCreateEndpoint(response http.ResponseWriter, request
 	}
 	id := one.InsertedID.(primitive.ObjectID).Hex()
 	obj := struct {
-		Id      string `json:"id"`
+		ID      string `json:"id"`
 		Message string `json:"message"`
 	}{
-		Id:      id,
+		ID:      id,
 		Message: "Category added",
 	}
 	middlewares.SuccessResponse(obj, response)
@@ -111,14 +111,14 @@ func (c Controller) CategoryReadEndpoint(response http.ResponseWriter, request *
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 590
 		errors.Message = err.Error()
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	filter := bson.M{"_id": id, "user_id": userId}
+	filter := bson.M{"_id": id, "user_id": userID}
 	collection := c.MG.Database("notes").Collection("categories")
 	item := collection.FindOne(context.TODO(), filter)
 	err = item.Decode(&category)
@@ -166,7 +166,7 @@ func (c Controller) CategoryUpdateEndpoint(response http.ResponseWriter, request
 		return
 	}
 	name := request.FormValue("name")
-	parentId := request.FormValue("parent_id")
+	parentID := request.FormValue("parent_id")
 	sort := request.FormValue("sort")
 	if sort != "" {
 		iSort, err = strconv.Atoi(request.FormValue("sort"))
@@ -179,8 +179,8 @@ func (c Controller) CategoryUpdateEndpoint(response http.ResponseWriter, request
 	}
 	data := bson.M{}
 	data["name"] = name
-	if parentId != "" {
-		data["parent_id"] = parentId
+	if parentID != "" {
+		data["parent_id"] = parentID
 	}
 	if sort != "" {
 		data["sort"] = iSort
@@ -249,8 +249,8 @@ func (c Controller) CategoryListEndpoint(response http.ResponseWriter, request *
 	var categories models.Categories
 	var category []*models.Category
 	collection := c.MG.Database("notes").Collection("categories")
-	userId, _ := helpers.GetUserID()
-	filter := bson.M{"user_id": userId}
+	userID, _ := helpers.GetUserID()
+	filter := bson.M{"user_id": userID}
 	items, err := collection.Find(context.TODO(), filter)
 	if err != nil {
 		errors.Code = 510

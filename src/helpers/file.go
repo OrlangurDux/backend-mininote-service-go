@@ -9,7 +9,7 @@ import (
 	middlewares "orlangur.link/services/mini.note/handlers"
 )
 
-//UploadAvatar -> upload avatar for user
+// UploadAvatar -> upload avatar for user
 func UploadAvatar(file multipart.File, handler *multipart.FileHeader) (string, error) {
 	execDir, _ := os.Getwd()
 	avatarDir := middlewares.DotEnvVariable("AVATAR_DIR")
@@ -20,12 +20,12 @@ func UploadAvatar(file multipart.File, handler *multipart.FileHeader) (string, e
 			return "", err
 		}
 	}
-	userId, err := GetUserID()
+	userID, err := GetUserID()
 	if err != nil {
 		return "", err
 	}
 	ext := filepath.Ext(handler.Filename)
-	fileAvatar := userId.Hex() + ext
+	fileAvatar := userID.Hex() + ext
 	shortFileAvatar := avatarDir + fileAvatar
 	fullFileAvatar := pathAvatarDir + fileAvatar
 	f, err := os.OpenFile(fullFileAvatar, os.O_WRONLY|os.O_CREATE, 0666)

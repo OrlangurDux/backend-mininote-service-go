@@ -33,7 +33,7 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 	var errors models.Error
 	var notes []*models.Note
 	var noteList models.Notes
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 295
 		errors.Message = err.Error()
@@ -64,7 +64,7 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 	options := options2.Find()
 	options.SetSkip(offset)
 	options.SetLimit(perPage)
-	filter := bson.M{"user_id": userId}
+	filter := bson.M{"user_id": userID}
 	total, err := collection.CountDocuments(context.TODO(), filter)
 	if err != nil {
 		errors.Code = 297
@@ -151,7 +151,7 @@ func (c Controller) NoteCreateEndpoint(response http.ResponseWriter, request *ht
 	title := request.PostFormValue("title")
 	note := request.PostFormValue("note")
 	status := request.PostFormValue("status")
-	categoryId := request.PostFormValue("category_id")
+	categoryID := request.PostFormValue("category_id")
 	uid, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 280
@@ -163,9 +163,9 @@ func (c Controller) NoteCreateEndpoint(response http.ResponseWriter, request *ht
 	record.Title = title
 	record.Note = note
 	record.Status = status
-	record.UserId = uid
-	if categoryId != "" {
-		record.CategoryId, err = primitive.ObjectIDFromHex(categoryId)
+	record.UserID = uid
+	if categoryID != "" {
+		record.CategoryID, err = primitive.ObjectIDFromHex(categoryID)
 		if err != nil {
 			errors.Code = 285
 			errors.Message = err.Error()
@@ -186,10 +186,10 @@ func (c Controller) NoteCreateEndpoint(response http.ResponseWriter, request *ht
 	}
 	id := one.InsertedID.(primitive.ObjectID).Hex()
 	obj := struct {
-		Id      string `json:"id"`
+		ID      string `json:"id"`
 		Message string `json:"message"`
 	}{
-		Id:      id,
+		ID:      id,
 		Message: "Note added",
 	}
 	middlewares.SuccessResponse(obj, response)
@@ -271,7 +271,7 @@ func (c Controller) NoteDeleteEndpoint(response http.ResponseWriter, request *ht
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 330
 		errors.Message = err.Error()
@@ -279,7 +279,7 @@ func (c Controller) NoteDeleteEndpoint(response http.ResponseWriter, request *ht
 		return
 	}
 	collection := c.MG.Database("notes").Collection("notes")
-	filter := bson.M{"_id": id, "user_id": userId}
+	filter := bson.M{"_id": id, "user_id": userID}
 	_, err = collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
 		errors.Code = 340
@@ -307,7 +307,7 @@ func (c Controller) NoteSearchEndpoint(response http.ResponseWriter, request *ht
 	var notes []*models.Note
 	var pipeline []bson.M
 	q := request.URL.Query().Get("q")
-	userId, err := helpers.GetUserID()
+	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 295
 		errors.Message = err.Error()
@@ -318,7 +318,7 @@ func (c Controller) NoteSearchEndpoint(response http.ResponseWriter, request *ht
 	var orKey []interface{}
 	orKey = append(orKey, bson.M{"title": bson.M{"$regex": q, "$options": "i"}})
 	orKey = append(orKey, bson.M{"note": bson.M{"$regex": q, "$options": "i"}})
-	matchStage := bson.M{"$match": bson.M{"$and": []bson.M{{"user_id": userId}, {"$or": orKey}}}}
+	matchStage := bson.M{"$match": bson.M{"$and": []bson.M{{"user_id": userID}, {"$or": orKey}}}}
 	sortStage := bson.M{"$sort": bson.M{"updated_at": -1}}
 	pipeline = append(pipeline, matchStage, sortStage)
 	find, err := collection.Aggregate(context.TODO(), pipeline)

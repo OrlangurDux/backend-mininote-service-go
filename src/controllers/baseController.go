@@ -15,6 +15,7 @@ func BaseController(mg *mongo.Client) Controller {
 	return Controller{mg}
 }
 
+// Pagination -> create pagination for item
 func Pagination(records interface{}, request *http.Request) (interface{}, error) {
 	return nil, nil
 }

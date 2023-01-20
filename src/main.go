@@ -29,6 +29,7 @@ import (
 // @in header
 // @name Authorization
 
+// Version print version with start program
 var Version = "development"
 
 func init() {

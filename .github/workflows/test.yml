@@ -10,7 +10,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [ 1.17.x ]
+        go-version: [ 1.19.x ]
         os: [ ubuntu-20.04 ]
         mongodb-version: [6.0]
     runs-on: ${{ matrix.os }}
@@ -51,5 +51,8 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
+      - name: LS
+        run: ls -lh
+        
       - name: Run tests
         run: cd src/tests && go test -race -vet=off ./...
