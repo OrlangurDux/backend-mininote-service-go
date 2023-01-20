@@ -106,6 +106,7 @@ func TestUserForgotEndpoint(t *testing.T) {
 	client := routes.Routes()
 	client.ServeHTTP(rr, req)
 	if status := rr.Code; status != http.StatusOK {
+		fmt.Println(rr.Body.String())
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)
 	}

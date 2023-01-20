@@ -51,15 +51,6 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
-      - name: PWD
-        run: pwd
-
-      - name: LS
-        run: ls src/ -lha
-
-      - name: Cat
-        run: cat $(pwd)/src/.env.test
-
       - name: Run tests
         env:
           SMTP_HOST: ${{vars.SMTP_HOST}}
@@ -67,5 +58,4 @@ jobs:
           SMTP_PASSWORD: ${{secrets.SMTP_HOST}}
           SMTP_PORT: ${{vars.SMTP_PORT}}
           SMTP_TO: ${{vars.SMTP_TO}}
-          TEST_VAR: MySuperVar
         run: cd src/tests && go test -v -race -vet=off ./...
