@@ -57,5 +57,8 @@ jobs:
       - name: LS
         run: ls src/ -lha
 
+      - name: Cat
+        run: cat $(pwd)/src/.env-test
+
       - name: Run tests
         run: cd src/tests && go test -v -race -vet=off ./...
