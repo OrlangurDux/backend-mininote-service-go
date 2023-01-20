@@ -23,7 +23,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Create environment
-        run: cd src/ && cp .env.default .env-test
+        run: cd src/ && cp .env.default .env.test
 
       - name: Verify dependencies
         run: cd src/ && go mod verify
@@ -58,7 +58,7 @@ jobs:
         run: ls src/ -lha
 
       - name: Cat
-        run: cat $(pwd)/src/.env-test
+        run: cat /home/runner/work/backend-mininote-service-go/backend-mininote-service-go/src/.env.test
 
       - name: Run tests
         run: cd src/tests && go test -v -race -vet=off ./...

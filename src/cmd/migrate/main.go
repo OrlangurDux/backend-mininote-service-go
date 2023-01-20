@@ -148,7 +148,7 @@ func DotEnvVariable(key string) string {
 	if flag.Lookup("test.v") == nil {
 		name := ".env"
 		if Env == "development" {
-			name = ".env-test"
+			name = ".env.test"
 		}
 		err := godotenv.Load("../" + name)
 		if err != nil {

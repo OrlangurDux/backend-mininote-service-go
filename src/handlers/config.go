@@ -18,7 +18,7 @@ func DotEnvVariable(key string) string {
 	if flag.Lookup("test.v") == nil {
 		name := ".env"
 		if Env == "development" {
-			name = ".env-test"
+			name = ".env.test"
 		}
 		err := godotenv.Load(name)
 		if err != nil {
@@ -31,7 +31,7 @@ func DotEnvVariable(key string) string {
 		param = os.Getenv(key)
 	} else {
 		path, _ := os.Getwd()
-		config := strings.Split(path, "tests")[0] + ".env.default"
+		config := strings.Split(path, "tests")[0] + ".env.test"
 		err := godotenv.Load(config)
 		if err != nil {
 			log.Fatalf("Error loading %s file", config)
