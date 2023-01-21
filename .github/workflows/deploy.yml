@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [master, 0.1.x-dev]
     tags: [v*]
   pull_request:
     branches: [master]
