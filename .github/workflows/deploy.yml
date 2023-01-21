@@ -21,6 +21,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: Verify dependencies
+        run: cd src/ && go mod verify
+
       - name: build and test
         run: |
           go test -v -timeout=100s -covermode=count -coverprofile=$GITHUB_WORKSPACE/profile.cov_tmp ./...
