@@ -83,17 +83,18 @@ jobs:
           GITHUB_PACKAGE_TOKEN: ${{ secrets.PKG_TOKEN }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
           USERNAME: ${{ github.actor }}
+          DOCKER_HUB_USER: ${{ vars.DOCKER_HUB_USER }}
           GITHUB_SHA: ${{ github.sha}}
           GITHUB_REF: ${{ github.ref}}
         run: |
           ref="$(echo ${GITHUB_REF} | cut -d'/' -f3)"
           echo GITHUB_REF - $ref
           echo ${GITHUB_PACKAGE_TOKEN} | docker login ghcr.io -u ${USERNAME} --password-stdin
-          echo ${DOCKER_HUB_TOKEN} | docker login -u ${USERNAME} --password-stdin
+          echo ${DOCKER_HUB_TOKEN} | docker login -u ${DOCKER_HUB_USER} --password-stdin
           docker buildx build --push \
               --build-arg CI=github --build-arg GITHUB_SHA=${GITHUB_SHA} --build-arg GIT_BRANCH=${ref} \
               --platform linux/amd64,linux/arm/v7,linux/arm64 \
-              -t ghcr.io/${USERNAME}/service-mini-note:${ref} -t ${USERNAME}/service-mini-note:${ref} .
+              -t ghcr.io/${DOCKER_HUB_USER}/service-mini-note:${ref} -t ${DOCKER_HUB_USER}/service-mini-note:${ref} .
       - name: deploy tagged (latest) to ghcr.io and dockerhub
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         env:
@@ -111,5 +112,5 @@ jobs:
           docker buildx build --push \
               --build-arg CI=github --build-arg GITHUB_SHA=${GITHUB_SHA} --build-arg GIT_BRANCH=${ref} \
               --platform linux/amd64,linux/arm/v7,linux/arm64 \
-              -t ghcr.io/${USERNAME}/service-mini-note:${ref} -t ghcr.io/${USERNAME}/service-mini-note:latest \
-              -t ${USERNAME}/service-mini-note:${ref} -t ${USERNAME}/service-mini-note:latest .
+              -t ghcr.io/${DOCKER_HUB_USER}/service-mini-note:${ref} -t ghcr.io/${DOCKER_HUB_USER}/service-mini-note:latest \
+              -t ${DOCKER_HUB_USER}/service-mini-note:${ref} -t ${DOCKER_HUB_USER}/service-mini-note:latest .
