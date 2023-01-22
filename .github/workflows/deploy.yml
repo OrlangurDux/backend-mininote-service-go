@@ -61,6 +61,7 @@ jobs:
 
       - name: run linters
         run: $GITHUB_WORKSPACE/golangci-lint run
+        working-directory: src
         env:
           GOFLAGS: "-mod=vendor"
           TZ: "Europe/Moscow"
