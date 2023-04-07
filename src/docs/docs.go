@@ -1196,6 +1196,44 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/version": {
+            "get": {
+                "description": "Get version app",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Help"
+                ],
+                "summary": "Get version",
+                "responses": {
+                    "200": {
+                        "description": "Version",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1352,7 +1390,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1",
+	Version:          "0.1.2",
 	Host:             "localhost:9077",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},

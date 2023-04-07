@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/fatih/color"
 	"github.com/rs/cors"
+	"log"
+	"net/http"
+	"orlangur.link/services/mini.note/models"
 
 	"orlangur.link/services/mini.note/controllers"
 	"orlangur.link/services/mini.note/routes"
@@ -17,7 +17,7 @@ import (
 )
 
 // @title Mini Note RESTful API
-// @version 0.1
+// @version 0.1.2
 // @description This is a backend server for service mini.note resource.
 
 // @contact.name API Support
@@ -39,6 +39,7 @@ func init() {
 
 func main() {
 	port := middlewares.DotEnvVariable("PORT")
+	models.Version = Version
 	color.Blue("Version:\t" + Version)
 	color.Cyan("🌏 Server running on localhost:" + port)
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)

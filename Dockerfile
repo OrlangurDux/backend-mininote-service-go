@@ -1,12 +1,12 @@
 FROM golang:1.19.5-alpine AS build
-ARG VERSION_BIN=0.1.2
+ARG VERSION_BIN=0.1.3
 ARG VERSION=0.1.0
 ARG BIN_NAME=mininote
 RUN apk add gcc musl-dev
 WORKDIR /src
 COPY ./src .
 RUN go mod vendor
-RUN CGO_ENABLED=0 go build -ldflags="-X main.Version=${VERSION_BIN}" -o "${BIN_NAME}" ./
+RUN CGO_ENABLED=0 go build -ldflags="-X models.Version=${VERSION_BIN}" -o "${BIN_NAME}" ./
 RUN CGO_ENABLED=0 go build -ldflags="-X main.Version=${VERSION}" -o "migrate" ./cmd/migrate/main.go
 
 FROM scratch AS bin

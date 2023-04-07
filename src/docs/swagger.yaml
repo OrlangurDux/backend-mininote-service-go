@@ -99,7 +99,7 @@ info:
     name: API Support
   description: This is a backend server for service mini.note resource.
   title: Mini Note RESTful API
-  version: "0.1"
+  version: 0.1.2
 paths:
   /categories:
     get:
@@ -852,6 +852,31 @@ paths:
       summary: Register user account
       tags:
       - User
+  /version:
+    get:
+      description: Get version app
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Version
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      summary: Get version
+      tags:
+      - Help
 securityDefinitions:
   BearerAuth:
     in: header

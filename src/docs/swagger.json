@@ -6,7 +6,7 @@
         "contact": {
             "name": "API Support"
         },
-        "version": "0.1"
+        "version": "0.1.2"
     },
     "host": "localhost:9077",
     "basePath": "/api/v1",
@@ -1165,6 +1165,44 @@
                 "responses": {
                     "200": {
                         "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/version": {
+            "get": {
+                "description": "Get version app",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Help"
+                ],
+                "summary": "Get version",
+                "responses": {
+                    "200": {
+                        "description": "Version",
                         "schema": {
                             "$ref": "#/definitions/UniversalDTO"
                         }

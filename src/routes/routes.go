@@ -15,6 +15,7 @@ func Routes() *mux.Router {
 	router := mux.NewRouter()
 
 	apiNotAuth := router.PathPrefix("/api/v1").Subrouter()
+	apiNotAuth.HandleFunc("/version", c.GetVersion).Methods("GET")
 	userNotAuth := apiNotAuth.PathPrefix("/users").Subrouter()
 	userNotAuth.HandleFunc("/login", c.UserLoginEndpoint).Methods("POST")
 	userNotAuth.HandleFunc("/register", c.UserRegisterEndpoint).Methods("POST")

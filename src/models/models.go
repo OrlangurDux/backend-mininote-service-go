@@ -6,6 +6,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Version print version with start program
+var Version = "development"
+
 // UniversalDTO -> model for response json
 type UniversalDTO struct {
 	StatusCode int         `json:"status"`
