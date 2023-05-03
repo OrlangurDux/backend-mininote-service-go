@@ -29,9 +29,9 @@ func BaseController(mg *mongo.Client) Controller {
 // @Router       /version [get]
 func (c Controller) GetVersion(response http.ResponseWriter, request *http.Request) {
 	data := struct {
-		Version string
-		Author  string
-		Contact string
+		Version string `json:"version"`
+		Author  string `json:"author"`
+		Contact string `json:"contact"`
 	}{
 		Version: models.Version,
 		Author:  "Alexey (Orlangur)",
