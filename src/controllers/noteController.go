@@ -43,7 +43,7 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 	page, _ := strconv.ParseInt(request.URL.Query().Get("page"), 10, 32)
 	perPage, _ := strconv.ParseInt(request.URL.Query().Get("per_page"), 10, 32)
 	if perPage == 0 {
-		sPerPage := middlewares.DotEnvVariable("DEFAULT_PER_PAGE")
+		sPerPage := middlewares.DotEnvVariable("DEFAULT_PER_PAGE", "20")
 		if sPerPage != "" {
 			perPage, err = strconv.ParseInt(sPerPage, 10, 32)
 			if err != nil {
@@ -215,6 +215,7 @@ func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *ht
 	//var note models.Note
 	var errors models.Error
 	data := bson.M{}
+	//var data models.Note
 	param := mux.Vars(request)
 	id, err := primitive.ObjectIDFromHex(param["id"])
 	if err != nil {
@@ -236,6 +237,7 @@ func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *ht
 			data[key] = value[0]
 		}
 	}
+
 	collection := c.MG.Database("notes").Collection("notes")
 	update := bson.M{"$set": data}
 	_, err = collection.UpdateByID(context.TODO(), id, update)

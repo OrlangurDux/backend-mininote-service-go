@@ -6,12 +6,12 @@ import (
 	middlewares "orlangur.link/services/mini.note/handlers"
 )
 
-//Mail -> message sender
+// Mail -> message sender
 func Mail(to []string, subject string, message string) error {
-	host := middlewares.DotEnvVariable("SMTP_HOST")
-	login := middlewares.DotEnvVariable("SMTP_LOGIN")
-	password := middlewares.DotEnvVariable("SMTP_PASSWORD")
-	port := middlewares.DotEnvVariable("SMTP_PORT")
+	host := middlewares.DotEnvVariable("SMTP_HOST", "")
+	login := middlewares.DotEnvVariable("SMTP_LOGIN", "")
+	password := middlewares.DotEnvVariable("SMTP_PASSWORD", "")
+	port := middlewares.DotEnvVariable("SMTP_PORT", "25")
 
 	body := "Subject:" + subject + "\r\n\r\n" + message
 	bBody := []byte(body)

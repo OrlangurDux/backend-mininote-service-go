@@ -25,7 +25,7 @@ var Permissions []interface{} */
 // IsAuthorized -> verify jwt header
 func IsAuthorized(next http.Handler) http.Handler {
 	var error models.Error
-	mySigningKey = []byte(DotEnvVariable("JWT_SECRET"))
+	mySigningKey = []byte(DotEnvVariable("JWT_SECRET", ""))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if check, err := IsCheckJWTHS256(w, r); check {
 			next.ServeHTTP(w, r)
@@ -62,7 +62,7 @@ func IsCheckJWTHS256(response http.ResponseWriter, request *http.Request) (bool,
 
 // IsCheckJWTRS256 -> check JWT token algorithm RS256
 func IsCheckJWTRS256(response http.ResponseWriter, request *http.Request) (bool, string) {
-	SecretKey := "-----BEGIN CERTIFICATE-----\n" + DotEnvVariable("JWT_SECRET") + "\n-----END CERTIFICATE-----"
+	SecretKey := "-----BEGIN CERTIFICATE-----\n" + DotEnvVariable("JWT_SECRET", "") + "\n-----END CERTIFICATE-----"
 
 	if request.Header["Authorization"] != nil {
 
@@ -109,8 +109,8 @@ func IsCheckJWTRS256(response http.ResponseWriter, request *http.Request) (bool,
 func GenerateJWT(user models.User) (models.JWT, error) {
 	var JWT models.JWT
 
-	mySigningKey = []byte(DotEnvVariable("JWT_SECRET"))
-	minute, _ := strconv.Atoi(DotEnvVariable("JWT_LIFETIME"))
+	mySigningKey = []byte(DotEnvVariable("JWT_SECRET", ""))
+	minute, _ := strconv.Atoi(DotEnvVariable("JWT_LIFETIME", "720"))
 	expirationTime := time.Now().Add(time.Minute * time.Duration(minute)).Unix()
 
 	token := jwt.New(jwt.SigningMethodHS256)

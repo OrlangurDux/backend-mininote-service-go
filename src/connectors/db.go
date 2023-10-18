@@ -11,9 +11,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-//DbconnectMG -> connects mongo
+// DbconnectMG -> connects mongo
 func DbconnectMG() *mongo.Client {
-	clientOptions := options.Client().ApplyURI(middlewares.DotEnvVariable("MONGO_URL"))
+	clientOptions := options.Client().ApplyURI(middlewares.DotEnvVariable("MONGO_URL", "mongodb://localhost:27017/db"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("⛒ Connection Failed to Database")

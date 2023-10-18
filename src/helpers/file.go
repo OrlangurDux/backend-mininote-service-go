@@ -12,7 +12,7 @@ import (
 // UploadAvatar -> upload avatar for user
 func UploadAvatar(file multipart.File, handler *multipart.FileHeader) (string, error) {
 	execDir, _ := os.Getwd()
-	avatarDir := middlewares.DotEnvVariable("AVATAR_DIR")
+	avatarDir := middlewares.DotEnvVariable("AVATAR_DIR", "/uploaded/avatars/")
 	pathAvatarDir := execDir + avatarDir
 	if _, err := os.Stat(pathAvatarDir); os.IsNotExist(err) {
 		err := os.MkdirAll(pathAvatarDir, os.ModePerm)

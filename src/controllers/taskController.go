@@ -10,7 +10,7 @@ import (
 
 // Tasker -> run task after timeout
 func Tasker() {
-	importInterval, _ := strconv.Atoi(middlewares.DotEnvVariable("UPDATE_IMPORT_HOUR"))
+	importInterval, _ := strconv.Atoi(middlewares.DotEnvVariable("UPDATE_IMPORT_HOUR", "1"))
 	importTicker := time.NewTicker(time.Duration(importInterval) * time.Hour)
 	importMinute := time.NewTicker(time.Minute)
 	for {

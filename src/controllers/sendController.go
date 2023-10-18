@@ -58,14 +58,14 @@ func (c *Controller) SendRequest(response http.ResponseWriter, request *http.Req
 			}
 		}
 	}
-	subject := middlewares.DotEnvVariable("SMTP_SUBJECT")
-	message := middlewares.DotEnvVariable("SMTP_MESSAGE")
+	subject := middlewares.DotEnvVariable("SMTP_SUBJECT", "")
+	message := middlewares.DotEnvVariable("SMTP_MESSAGE", "")
 	unpackReq := reflect.ValueOf(req)
 	unpackKeys := unpackReq.Type()
 	for i := 0; i < unpackReq.NumField(); i++ {
 		message = strings.ReplaceAll(message, "#"+strings.ToLower(unpackKeys.Field(i).Name)+"#", unpackReq.Field(i).String())
 	}
-	to := []string{middlewares.DotEnvVariable("SMTP_TO")}
+	to := []string{middlewares.DotEnvVariable("SMTP_TO", "")}
 	err = helpers.Mail(to, subject, message)
 	if err != nil {
 		errors.Code = 220
