@@ -41,7 +41,7 @@ func main() {
 	middlewares.LoadDotEnv()
 	port := middlewares.DotEnvVariable("PORT", "9077")
 	models.Version = Version
-	color.Blue("Version:\t" + Version)
+	color.Blue("Version:\t" + models.Version)
 	color.Cyan("🌏 Server running on localhost:" + port)
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 

@@ -6,7 +6,7 @@ RUN apk add gcc musl-dev
 WORKDIR /src
 COPY ./src .
 RUN go mod vendor
-RUN CGO_ENABLED=0 go build -ldflags="-X models.Version=${VERSION_BIN}" -o "${BIN_NAME}" ./
+RUN CGO_ENABLED=0 go build -ldflags="-X main.Version=${VERSION_BIN}" -o "${BIN_NAME}" ./
 RUN CGO_ENABLED=0 go build -ldflags="-X main.Version=${VERSION}" -o "migrate" ./cmd/migrate/main.go
 
 FROM scratch AS bin
