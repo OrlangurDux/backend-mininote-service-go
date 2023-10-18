@@ -1,5 +1,5 @@
 FROM golang:1.19.5-alpine AS build
-ARG VERSION_BIN=0.1.3
+ARG VERSION_BIN=0.1.4
 ARG VERSION=0.1.0
 ARG BIN_NAME=mininote
 RUN apk add gcc musl-dev
