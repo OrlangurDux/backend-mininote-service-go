@@ -11,6 +11,7 @@ import (
 // Env -> switch config file cli --env variable
 var Env string
 
+// LoadDotEnv -> load config from .env
 func LoadDotEnv() {
 	if flag.Lookup("test.v") == nil {
 		name := ".env"

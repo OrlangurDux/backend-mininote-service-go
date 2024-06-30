@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"crypto/md5"
+	"flag"
 	"fmt"
 	"net/http"
 	"time"
@@ -167,6 +168,7 @@ func (c Controller) UserLoginEndpoint(response http.ResponseWriter, request *htt
 func (c Controller) UserForgotEndpoint(response http.ResponseWriter, request *http.Request) {
 	var errors models.Error
 	var user models.User
+	var obj interface{}
 	err := request.ParseForm()
 	if err != nil {
 		errors.Code = 71
@@ -228,12 +230,22 @@ func (c Controller) UserForgotEndpoint(response http.ResponseWriter, request *ht
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	obj := struct {
-		//Token   string `json:"token"`
-		Message string `json:"message"`
-	}{
-		//Token:   restoreToken,
-		Message: responseMessage,
+	if flag.Lookup("test.v") == nil {
+		obj = struct {
+			//Token   string `json:"token"`
+			Message string `json:"message"`
+		}{
+			//Token:   restoreToken,
+			Message: responseMessage,
+		}
+	} else {
+		obj = struct {
+			Token   string `json:"token"`
+			Message string `json:"message"`
+		}{
+			Token:   restoreToken,
+			Message: responseMessage,
+		}
 	}
 	middlewares.SuccessResponse(obj, response)
 }

@@ -10,6 +10,7 @@ import (
 
 // Routes -> define endpoints
 func Routes() *mux.Router {
+	middlewares.LoadDotEnv()
 	MG := connectors.DbconnectMG()
 	c := controllers.BaseController(MG)
 	router := mux.NewRouter()

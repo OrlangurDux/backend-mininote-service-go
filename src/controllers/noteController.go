@@ -250,6 +250,7 @@ func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *ht
 		return
 	}
 	record.UserID = uid
+	record.ID = id
 
 	collection := c.MG.Database("notes").Collection("notes")
 	update := bson.M{"$set": record}
@@ -260,7 +261,7 @@ func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *ht
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	success := fmt.Sprintf("Note ID:%s updated", id)
+	success := fmt.Sprintf("Note ID: %s updated", id.Hex())
 	middlewares.SuccessResponse(success, response)
 }
 

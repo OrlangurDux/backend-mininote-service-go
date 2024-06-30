@@ -7,9 +7,8 @@ import (
 	"github.com/rs/cors"
 	"log"
 	"net/http"
-	"orlangur.link/services/mini.note/models"
-
 	"orlangur.link/services/mini.note/controllers"
+	"orlangur.link/services/mini.note/models"
 	"orlangur.link/services/mini.note/routes"
 
 	_ "orlangur.link/services/mini.note/docs"
