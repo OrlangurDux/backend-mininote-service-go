@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	options2 "go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"net/http"
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/helpers"
@@ -214,8 +215,7 @@ func (c Controller) NoteCreateEndpoint(response http.ResponseWriter, request *ht
 func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *http.Request) {
 	//var note models.Note
 	var errors models.Error
-	data := bson.M{}
-	//var data models.Note
+	var record models.Note
 	param := mux.Vars(request)
 	id, err := primitive.ObjectIDFromHex(param["id"])
 	if err != nil {
@@ -234,12 +234,25 @@ func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *ht
 
 	for key, value := range request.PostForm {
 		if value[0] != "" {
-			data[key] = value[0]
+			err = helpers.SetField(&record, key, value[0])
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 
+	record.UpdatedAt = time.Now()
+	uid, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 610
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	record.UserID = uid
+
 	collection := c.MG.Database("notes").Collection("notes")
-	update := bson.M{"$set": data}
+	update := bson.M{"$set": record}
 	_, err = collection.UpdateByID(context.TODO(), id, update)
 	if err != nil {
 		errors.Code = 320

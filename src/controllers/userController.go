@@ -200,7 +200,9 @@ func (c Controller) UserForgotEndpoint(response http.ResponseWriter, request *ht
 		}
 		responseMessage = "Update password success"
 	} else if email != "" {
-		restoreToken = helpers.RandomString(32)
+		//restoreToken = helpers.RandomString(32)
+		restoreToken = helpers.RandomHash("")
+
 		subject := fmt.Sprintf("Token fo recovery password %s", middlewares.DotEnvVariable("HOST", "http://localhost:9077"))
 		message := fmt.Sprintf("Link for recovery password %sforgot/?token=%s", middlewares.DotEnvVariable("HOST", "http://localhost:9077"), restoreToken)
 		filter := bson.M{"email": email}
@@ -227,10 +229,10 @@ func (c Controller) UserForgotEndpoint(response http.ResponseWriter, request *ht
 		return
 	}
 	obj := struct {
-		Token   string `json:"token"`
+		//Token   string `json:"token"`
 		Message string `json:"message"`
 	}{
-		Token:   restoreToken,
+		//Token:   restoreToken,
 		Message: responseMessage,
 	}
 	middlewares.SuccessResponse(obj, response)

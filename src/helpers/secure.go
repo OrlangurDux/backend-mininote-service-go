@@ -1,7 +1,9 @@
 package helpers
 
 import (
+	"crypto/md5"
 	"errors"
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -33,4 +35,14 @@ func RandomString(n int) string {
 	}
 	s := sb.String()
 	return s
+}
+
+// RandomHash -> generate random hash from
+func RandomHash(s string) string {
+	hash := s
+	if hash == "" {
+		hash = RandomString(32)
+	}
+	data := []byte(hash)
+	return fmt.Sprintf("%x", md5.Sum(data))
 }
