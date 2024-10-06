@@ -13,7 +13,7 @@ services:
       - service-mini-note-mongo
 
   service-mini-note-mongo:
-    image: 'mongo:latest'
+    image: 'mongo:5.0'
     container_name: 'service-mini-note-mongo'
     ports:
       - '27297:27017'

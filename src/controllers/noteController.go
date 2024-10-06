@@ -74,16 +74,16 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 		return
 	}
 	//Test aggregate
-	matchStage := bson.D{{"$match", bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
-	unwindStage := bson.D{{"$unwind", bson.M{"path": "$categories", "preserveNullAndEmptyArrays": true}}}
-	lookupStage := bson.D{{"$lookup", bson.D{{"from", "categories"},
-		{"localField", "category_id"},
-		{"foreignField", "_id"},
-		{"as", "categories"},
-		{"pipeline", bson.A{bson.D{{"$project", bson.M{"_id": 1, "name": 1}}}}}}}}
-	skipStage := bson.D{{"$skip", offset}}
-	limitSkip := bson.D{{"$limit", perPage}}
-	sortStage := bson.D{{"$sort", bson.M{"updated_at": -1}}}
+	matchStage := bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
+	unwindStage := bson.D{primitive.E{Key: "$unwind", Value: bson.M{"path": "$categories", "preserveNullAndEmptyArrays": true}}}
+	lookupStage := bson.D{primitive.E{Key: "$lookup", Value: bson.D{primitive.E{Key: "from", Value: "categories"},
+		primitive.E{Key: "localField", Value: "category_id"},
+		primitive.E{Key: "foreignField", Value: "_id"},
+		primitive.E{Key: "as", Value: "categories"},
+		primitive.E{Key: "pipeline", Value: bson.A{bson.D{primitive.E{Key: "$project", Value: bson.M{"_id": 1, "name": 1}}}}}}}}
+	skipStage := bson.D{primitive.E{Key: "$skip", Value: offset}}
+	limitSkip := bson.D{primitive.E{Key: "$limit", Value: perPage}}
+	sortStage := bson.D{primitive.E{Key: "$sort", Value: bson.M{"updated_at": -1}}}
 	pipeline = append(pipeline, matchStage, lookupStage, unwindStage, sortStage, skipStage, limitSkip)
 	aggregate, err := collection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
