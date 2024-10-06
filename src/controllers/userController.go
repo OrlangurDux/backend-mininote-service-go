@@ -351,7 +351,22 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-
+	userID, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 90
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	collection := c.MG.Database("notes").Collection("users")
+	filter := bson.M{"_id": userID, "active": true}
+	err = collection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		errors.Code = 80
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
 	avatar, handler, err := request.FormFile("avatar")
 	if err == nil {
 		path, err := helpers.UploadAvatar(avatar, handler)
@@ -373,18 +388,9 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 		}
 	}
 
-	userID, err := helpers.GetUserID()
-	if err != nil {
-		errors.Code = 90
-		errors.Message = err.Error()
-		middlewares.ErrorResponse(errors, response)
-		return
-	}
-
 	user.UpdatedAt = time.Now()
 	user.ID = userID
 
-	collection := c.MG.Database("notes").Collection("users")
 	update := bson.M{"$set": user}
 	_, err = collection.UpdateByID(context.TODO(), userID, update)
 	if err != nil {
