@@ -56,11 +56,15 @@ type Note struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
 	CategoryID primitive.ObjectID `json:"category_id" bson:"category_id"`
 	UserID     primitive.ObjectID `json:"user_id" bson:"user_id"`
-	Title      string             `json:"title" bson:"title"`
-	Note       string             `json:"note" bson:"note"`
-	Status     string             `json:"status" bson:"status"`
-	CreatedAt  time.Time          `json:"created_at" bson:"created_at"`
-	UpdatedAt  time.Time          `json:"updated_at" bson:"updated_at"`
+	Categories struct {
+		ID   primitive.ObjectID `json:"id" bson:"_id"`
+		Name string             `json:"name" bson:"name"`
+	} `json:"categories" bson:"categories"`
+	Title     string    `json:"title" bson:"title"`
+	Note      string    `json:"note" bson:"note"`
+	Status    string    `json:"status" bson:"status"`
+	CreatedAt time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 } //@name Note
 
 // Notes -> model notes

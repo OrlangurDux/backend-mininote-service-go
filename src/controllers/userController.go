@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -315,7 +316,7 @@ func (c Controller) UserProfileReadEndpoint(response http.ResponseWriter, reques
 	}
 
 	collection := c.MG.Database("notes").Collection("users")
-	filter := bson.M{"_id": userID}
+	filter := bson.M{"_id": userID, "active": true}
 	err = collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		errors.Code = 80
@@ -342,7 +343,8 @@ func (c Controller) UserProfileReadEndpoint(response http.ResponseWriter, reques
 // @Router       /users/profile [put]
 func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, request *http.Request) {
 	var errors models.Error
-	data := bson.M{}
+	var user models.User
+	//data := bson.M{}
 	if err := request.ParseMultipartForm(32 << 20); err != nil {
 		errors.Code = 85
 		errors.Message = err.Error()
@@ -360,11 +362,14 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 			middlewares.ErrorResponse(errors, response)
 			return
 		}
-		data["avatar"] = path
+		user.Avatar = path
 	}
 	for key, value := range request.PostForm {
 		if value[0] != "" {
-			data[key] = value[0]
+			err = helpers.SetField(&user, key, value[0])
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 
@@ -375,8 +380,12 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
+
+	user.UpdatedAt = time.Now()
+	user.ID = userID
+
 	collection := c.MG.Database("notes").Collection("users")
-	update := bson.M{"$set": data}
+	update := bson.M{"$set": user}
 	_, err = collection.UpdateByID(context.TODO(), userID, update)
 	if err != nil {
 		errors.Code = 100

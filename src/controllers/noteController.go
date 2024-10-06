@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	options2 "go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 	middlewares "orlangur.link/services/mini.note/handlers"
@@ -34,6 +33,7 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 	var errors models.Error
 	var notes []*models.Note
 	var noteList models.Notes
+	var pipeline []bson.D
 	userID, err := helpers.GetUserID()
 	if err != nil {
 		errors.Code = 295
@@ -62,9 +62,9 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 	}
 	offset := page * perPage
 	collection := c.MG.Database("notes").Collection("notes")
-	options := options2.Find()
+	/*options := options2.Find()
 	options.SetSkip(offset)
-	options.SetLimit(perPage)
+	options.SetLimit(perPage)*/
 	filter := bson.M{"user_id": userID}
 	total, err := collection.CountDocuments(context.TODO(), filter)
 	if err != nil {
@@ -73,7 +73,34 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	find, err := collection.Find(context.TODO(), filter, options)
+	//Test aggregate
+	matchStage := bson.D{{"$match", bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
+	unwindStage := bson.D{{"$unwind", bson.M{"path": "$categories", "preserveNullAndEmptyArrays": true}}}
+	lookupStage := bson.D{{"$lookup", bson.D{{"from", "categories"},
+		{"localField", "category_id"},
+		{"foreignField", "_id"},
+		{"as", "categories"},
+		{"pipeline", bson.A{bson.D{{"$project", bson.M{"_id": 1, "name": 1}}}}}}}}
+	skipStage := bson.D{{"$skip", offset}}
+	limitSkip := bson.D{{"$limit", perPage}}
+	sortStage := bson.D{{"$sort", bson.M{"updated_at": -1}}}
+	pipeline = append(pipeline, matchStage, lookupStage, unwindStage, sortStage, skipStage, limitSkip)
+	aggregate, err := collection.Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		errors.Code = 291
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	err = aggregate.All(context.TODO(), &notes)
+	if err != nil {
+		errors.Code = 292
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	//end test aggregate
+	/*find, err := collection.Find(context.TODO(), filter, options)
 	if err != nil {
 		errors.Code = 298
 		errors.Message = err.Error()
@@ -86,7 +113,7 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 		errors.Message = err.Error()
 		middlewares.ErrorResponse(errors, response)
 		return
-	}
+	}*/
 	noteList.Total = total
 	noteList.Page = page
 	noteList.PerPage = perPage

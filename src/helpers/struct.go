@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -57,6 +58,12 @@ func SetField(obj interface{}, name string, value interface{}) error {
 			return fmt.Errorf("error converting string to ObjectID: %s", err)
 		}
 		structFieldValue.Set(reflect.ValueOf(objectID))
+	} else if strings.Contains(name, "active") && val.Kind() == reflect.String {
+		bActive, err := strconv.ParseBool(val.String())
+		if err != nil {
+			return fmt.Errorf("error converting string to boolean: %s", err)
+		}
+		structFieldValue.Set(reflect.ValueOf(bActive))
 	} else if structFieldType != val.Type() {
 		return fmt.Errorf("provided value type didn't match obj field type name: %s", name)
 	} else {

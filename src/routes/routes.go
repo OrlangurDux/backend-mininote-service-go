@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"net/http"
 	"orlangur.link/services/mini.note/connectors"
 	"orlangur.link/services/mini.note/controllers"
 	middlewares "orlangur.link/services/mini.note/handlers"
@@ -53,6 +54,9 @@ func Routes() *mux.Router {
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("swagger-ui"),
 	))
+
+	fs := http.FileServer(http.Dir("./uploaded"))
+	router.PathPrefix("/uploaded/").Handler(http.StripPrefix("/uploaded/", fs))
 
 	return router
 }

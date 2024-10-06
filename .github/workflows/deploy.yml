@@ -45,11 +45,11 @@ jobs:
           cat $GITHUB_WORKSPACE/profile.cov_tmp | grep -v "mocks" | grep -v "_mock" > $GITHUB_WORKSPACE/profile.cov
         working-directory: src
         env:
-          SMTP_HOST: ${{vars.SMTP_HOST}}
-          SMTP_LOGIN: ${{vars.SMTP_LOGIN}}
+          SMTP_HOST: ${{secrets.SMTP_HOST}}
+          SMTP_LOGIN: ${{secrets.SMTP_LOGIN}}
           SMTP_PASSWORD: ${{secrets.SMTP_PASSWORD}}
-          SMTP_PORT: ${{vars.SMTP_PORT}}
-          SMTP_TO: ${{vars.SMTP_TO}}
+          SMTP_PORT: ${{secrets.SMTP_PORT}}
+          SMTP_TO: ${{secrets.SMTP_TO}}
           GOFLAGS: "-mod=vendor"
           TZ: "Europe/Moscow"
 
@@ -86,7 +86,7 @@ jobs:
           GITHUB_PACKAGE_TOKEN: ${{ secrets.PKG_TOKEN }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
           USERNAME: ${{ github.actor }}
-          DOCKER_HUB_USER: ${{ vars.DOCKER_HUB_USER }}
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
           GITHUB_SHA: ${{ github.sha}}
           GITHUB_REF: ${{ github.ref}}
         run: |
@@ -104,7 +104,7 @@ jobs:
           GITHUB_PACKAGE_TOKEN: ${{ secrets.PKG_TOKEN }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
           USERNAME: ${{ github.actor }}
-          DOCKER_HUB_USER: ${{ vars.DOCKER_HUB_USER }}
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
           GITHUB_SHA: ${{ github.sha}}
           GITHUB_REF: ${{ github.ref}}
         run: |
