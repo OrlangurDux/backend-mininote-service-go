@@ -7,13 +7,15 @@ import (
 	"orlangur.link/services/mini.note/connectors"
 	"orlangur.link/services/mini.note/controllers"
 	middlewares "orlangur.link/services/mini.note/handlers"
+	"orlangur.link/services/mini.note/monitoring"
 )
 
 // Routes -> define endpoints
 func Routes() *mux.Router {
 	middlewares.LoadDotEnv()
 	MG := connectors.DbconnectMG()
-	c := controllers.BaseController(MG)
+	LG := monitoring.SetupLogger()
+	c := controllers.BaseController(MG, LG)
 	router := mux.NewRouter()
 
 	apiNotAuth := router.PathPrefix("/api/v1").Subrouter()

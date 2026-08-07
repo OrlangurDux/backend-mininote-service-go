@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"flag"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
 	"time"
@@ -127,6 +128,7 @@ func (c Controller) UserLoginEndpoint(response http.ResponseWriter, request *htt
 	if err != nil {
 		errors.Code = 50
 		errors.Message = "Password incorrect"
+		c.logger.WithFields(logrus.Fields{"errors": errors, "filter": filter}).Error(errors.Message)
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
@@ -148,7 +150,7 @@ func (c Controller) UserLoginEndpoint(response http.ResponseWriter, request *htt
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-
+	c.logger.WithFields(logrus.Fields{"user": user}).Info("User authorization")
 	middlewares.SuccessResponseJwt(jwt, response)
 }
 

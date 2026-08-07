@@ -629,6 +629,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Note category",
+                        "name": "category_id",
+                        "in": "formData"
+                    },
+                    {
                         "enum": [
                             "draft",
                             "public",
@@ -1304,6 +1310,17 @@ const docTemplate = `{
         "Note": {
             "type": "object",
             "properties": {
+                "categories": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "category_id": {
                     "type": "string"
                 },

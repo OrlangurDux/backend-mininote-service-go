@@ -11,7 +11,7 @@ build: ## Build docker container user as "make build [DOCKER-COMPOSE SERVICE]" e
 up: ## Start docker compose service use as "make up [DOCKER-COMPOSE SERVICE]" e.g. make up courts-mysql-dev
 	docker-compose -f docker-compose.dev.yml up -d $(RUN_ARGS)
 start: ## Short link for start courts-service-dev use as "make start"
-	docker-compose -f docker-compose.dev.yml up -d dev-service-mini-note
+	docker-compose -f docker-compose.dev.yml up -d service
 down: ## Stop docker compose service use as "make down [DOCKER-COMPOSE SERVICE]" e.g. make down courts-mysql-dev
 	docker-compose -f docker-compose.dev.yml down $(RUN_ARGS)
 stop: ## Stop all service in running docker-compose file use as "make stop"
@@ -22,10 +22,10 @@ restart: ## Restart service use as "make restart [DOCKER-COMPOSE SERVICE]"
 logs: ## Show logs all docker-compose service in real time use as "make logs"
 	docker-compose -f docker-compose.dev.yml logs --tail=100 -f $(RUN_ARGS)
 logs-service: ## Show logs primary service in real time use as "make logs-service"
-	docker-compose -f docker-compose.dev.yml logs --tail=100 -f dev-service-mini-note
+	docker-compose -f docker-compose.dev.yml logs --tail=100 -f service
 ps: ## Show running docker service from docker-compose file use as "make ps"
 	docker-compose -f docker-compose.dev.yml ps
 login: ## Login cli sh to container use as "make login [DOCKER-COMPOSE SERVICE]"
 	docker-compose -f docker-compose.dev.yml exec $(RUN_ARGS) /bin/sh
 login-service: ## Login cli sh to primary container use as "make login-service"
-	docker-compose -f docker-compose.dev.yml exec dev-service-mini-note /bin/sh
+	docker-compose -f docker-compose.dev.yml exec service /bin/sh

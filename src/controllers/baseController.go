@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	middlewares "orlangur.link/services/mini.note/handlers"
@@ -9,12 +10,13 @@ import (
 
 // Controller -> base controller
 type Controller struct {
-	MG *mongo.Client
+	MG     *mongo.Client
+	logger *logrus.Logger
 }
 
 // BaseController -> base controller
-func BaseController(mg *mongo.Client) Controller {
-	return Controller{mg}
+func BaseController(mg *mongo.Client, logger *logrus.Logger) Controller {
+	return Controller{mg, logger}
 }
 
 // GetVersion godoc

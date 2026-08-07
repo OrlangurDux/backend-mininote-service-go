@@ -27,7 +27,7 @@ import (
 // @Failure      500  {object}  models.UniversalDTO "error"
 // @Security BearerAuth
 // @Router       /send/request [post]
-func (c *Controller) SendRequest(response http.ResponseWriter, request *http.Request) {
+func (c Controller) SendRequest(response http.ResponseWriter, request *http.Request) {
 	var req models.Request
 	var errors models.Error
 	reqBody, _ := io.ReadAll(request.Body)

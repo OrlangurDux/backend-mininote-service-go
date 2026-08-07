@@ -3,16 +3,17 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
-	"net/http"
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/helpers"
 	"orlangur.link/services/mini.note/models"
-	"strconv"
-	"time"
 )
 
 // NoteListEndpoint godoc
@@ -232,6 +233,7 @@ func (c Controller) NoteCreateEndpoint(response http.ResponseWriter, request *ht
 // @Param		 id path string true "note id"
 // @Param        title  formData   string  true  "Note title"
 // @Param        note   formData   string  true  "Note body"
+// @Param        category_id formData string false "Note category"
 // @Param        status formData   string  true  "Note status" Enums(draft,public,archive)
 // @Success      200  {object}  models.UniversalDTO "Update note item"
 // @Failure      400  {object}  models.UniversalDTO "error"

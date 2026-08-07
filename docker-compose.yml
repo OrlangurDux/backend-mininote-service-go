@@ -1,7 +1,7 @@
 version: '3.3'
 
 services:
-  service-mini-note:
+  service:
     container_name: 'service-mini-note'
     build: .
     ports:
@@ -10,9 +10,9 @@ services:
       - ./src:/app
     restart: on-failure
     depends_on:
-      - service-mini-note-mongo
+      - mongo
 
-  service-mini-note-mongo:
+  mongo:
     image: 'mongo:6.0'
     container_name: 'service-mini-note-mongo'
     ports:

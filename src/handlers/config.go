@@ -24,8 +24,6 @@ func LoadDotEnv() {
 			if err != nil {
 				log.Println(err)
 				log.Println("Error loading " + name + " file")
-				//log.Fatalf("Error loading " + name + " file")
-				//os.Exit(1)
 			}
 		}
 	} else {

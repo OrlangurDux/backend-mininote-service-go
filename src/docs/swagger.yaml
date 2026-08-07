@@ -44,6 +44,13 @@ definitions:
     type: object
   Note:
     properties:
+      categories:
+        properties:
+          id:
+            type: string
+          name:
+            type: string
+        type: object
       category_id:
         type: string
       created_at:
@@ -476,6 +483,10 @@ paths:
         in: formData
         name: note
         required: true
+        type: string
+      - description: Note category
+        in: formData
+        name: category_id
         type: string
       - description: Note status
         enum:
