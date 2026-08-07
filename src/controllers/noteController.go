@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -77,11 +78,17 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 	//Test aggregate
 	matchStage := bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
 	unwindStage := bson.D{primitive.E{Key: "$unwind", Value: bson.M{"path": "$categories", "preserveNullAndEmptyArrays": true}}}
-	lookupStage := bson.D{primitive.E{Key: "$lookup", Value: bson.D{primitive.E{Key: "from", Value: "categories"},
-		primitive.E{Key: "localField", Value: "category_id"},
-		primitive.E{Key: "foreignField", Value: "_id"},
+	lookupStage := bson.D{primitive.E{Key: "$lookup", Value: bson.D{
+		primitive.E{Key: "from", Value: "categories"},
+		primitive.E{Key: "let", Value: bson.M{"categoryId": "$category_id"}},
+		primitive.E{Key: "pipeline", Value: bson.A{
+			bson.D{primitive.E{Key: "$match", Value: bson.M{
+				"$expr": bson.M{"$eq": bson.A{"$_id", "$$categoryId"}},
+			}}},
+			bson.D{primitive.E{Key: "$project", Value: bson.M{"_id": 1, "name": 1}}},
+		}},
 		primitive.E{Key: "as", Value: "categories"},
-		primitive.E{Key: "pipeline", Value: bson.A{bson.D{primitive.E{Key: "$project", Value: bson.M{"_id": 1, "name": 1}}}}}}}}
+	}}}
 	skipStage := bson.D{primitive.E{Key: "$skip", Value: offset}}
 	limitSkip := bson.D{primitive.E{Key: "$limit", Value: perPage}}
 	sortStage := bson.D{primitive.E{Key: "$sort", Value: bson.M{"updated_at": -1}}}
@@ -361,8 +368,9 @@ func (c Controller) NoteSearchEndpoint(response http.ResponseWriter, request *ht
 	}
 	collection := c.MG.Database("notes").Collection("notes")
 	var orKey []interface{}
-	orKey = append(orKey, bson.M{"title": bson.M{"$regex": q, "$options": "i"}})
-	orKey = append(orKey, bson.M{"note": bson.M{"$regex": q, "$options": "i"}})
+	qEscaped := regexp.QuoteMeta(q)
+	orKey = append(orKey, bson.M{"title": bson.M{"$regex": qEscaped, "$options": "i"}})
+	orKey = append(orKey, bson.M{"note": bson.M{"$regex": qEscaped, "$options": "i"}})
 	matchStage := bson.M{"$match": bson.M{"$and": []bson.M{{"user_id": userID}, {"$or": orKey}}}}
 	sortStage := bson.M{"$sort": bson.M{"updated_at": -1}}
 	pipeline = append(pipeline, matchStage, sortStage)
