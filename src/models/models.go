@@ -3,11 +3,14 @@ package models
 import (
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Version print version with start program
 var Version = "development"
+
+var GetHost func() string
 
 // UniversalDTO -> model for response json
 type UniversalDTO struct {
@@ -90,3 +93,19 @@ type Categories struct {
 	Total int         `json:"total"`
 	Items []*Category `json:"items"`
 } //@name Categories
+
+func (u *User) UnmarshalBSON(data []byte) error {
+	type Alias User
+	aux := &struct {
+		*Alias `bson:",inline"`
+	}{
+		Alias: (*Alias)(u),
+	}
+	if err := bson.Unmarshal(data, aux); err != nil {
+		return err
+	}
+
+	host := GetHost()
+	u.Avatar = host + u.Avatar
+	return nil
+}

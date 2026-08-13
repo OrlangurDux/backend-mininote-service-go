@@ -1,9 +1,10 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
-	"net/http"
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/models"
 )
@@ -16,6 +17,9 @@ type Controller struct {
 
 // BaseController -> base controller
 func BaseController(mg *mongo.Client, logger *logrus.Logger) Controller {
+	models.GetHost = func() string {
+		return middlewares.DotEnvVariable("HOST", "localhost:9077")
+	}
 	return Controller{mg, logger}
 }
 

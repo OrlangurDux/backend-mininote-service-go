@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/rs/cors"
 	"log"
 	"net/http"
+
+	"github.com/fatih/color"
+	"github.com/rs/cors"
 	"orlangur.link/services/mini.note/controllers"
 	"orlangur.link/services/mini.note/models"
 	"orlangur.link/services/mini.note/routes"
@@ -16,7 +17,7 @@ import (
 )
 
 // @title Mini Note RESTful API
-// @version 0.1.2
+// @version 0.1.11
 // @description This is a backend server for service mini.note resource.
 
 // @contact.name API Support
