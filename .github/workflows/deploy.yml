@@ -10,10 +10,17 @@ jobs:
   build:
     strategy:
       matrix:
-        go-version: [ 1.19.x ]
+        go-version: [ 1.23.x ]
         os: [ ubuntu-latest ]
         mongodb-version: [ 6.0 ]
     runs-on: ${{ matrix.os }}
+
+    services:
+      mailpit:
+        image: axllent/mailpit:latest
+        ports:
+          - 1025:1025 # SMTP port
+          - 8025:8025 # HTTP API/Web UI port
 
     steps:
       - name: set up go 1.19
