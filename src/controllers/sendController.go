@@ -31,10 +31,21 @@ import (
 func (c Controller) SendRequestEndpoint(response http.ResponseWriter, request *http.Request) {
 	var req models.Request
 	var errors models.Error
-	reqBody, _ := io.ReadAll(request.Body)
-	request.Body.Close()
+	reqBody, err := io.ReadAll(request.Body)
+	if err != nil {
+		errors.Code = 620
+		errors.Message = err.Error()
+		middlewares.ServerErrResponse(errors, response)
+		return
+	}
+	if err = request.Body.Close(); err != nil {
+		errors.Code = 630
+		errors.Message = err.Error()
+		middlewares.ServerErrResponse(errors, response)
+		return
+	}
 	request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
-	err := json.NewDecoder(request.Body).Decode(&req)
+	err = json.NewDecoder(request.Body).Decode(&req)
 	if err != nil {
 		request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
 		if err = request.ParseForm(); err != nil {

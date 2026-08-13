@@ -5,10 +5,11 @@ import (
 	"crypto/md5"
 	"flag"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -372,7 +373,14 @@ func (c Controller) UserProfileUpdateEndpoint(response http.ResponseWriter, requ
 	avatar, handler, err := request.FormFile("avatar")
 	if err == nil {
 		path, err := helpers.UploadAvatar(avatar, handler)
-		defer avatar.Close()
+		defer func() {
+			if err := avatar.Close(); err != nil {
+				errors.Code = 84
+				errors.Message = err.Error()
+				middlewares.ErrorResponse(errors, response)
+				return
+			}
+		}()
 		if err != nil {
 			errors.Code = 87
 			errors.Message = err.Error()

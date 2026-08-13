@@ -2,17 +2,18 @@ package helpers
 
 import (
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // normalizeFieldName converts field names like "category_id" and "categoryid" to a common base form.
 func normalizeFieldName(name string) string {
 	// Remove underscores and convert to lower case for a case-insensitive comparison
-	return strings.ToLower(strings.Replace(name, "_", "", -1))
+	return strings.ToLower(strings.ReplaceAll(name, "_", ""))
 }
 
 // SetField -> set value from value variable as key

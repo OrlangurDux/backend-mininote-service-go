@@ -10,11 +10,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"orlangur.link/services/mini.note/models"
-	"orlangur.link/services/mini.note/routes"
 	"strconv"
 	"strings"
 	"testing"
+
+	"orlangur.link/services/mini.note/models"
+	"orlangur.link/services/mini.note/routes"
 )
 
 var (
@@ -232,7 +233,11 @@ func TestUserProfileUpdateEndpoint(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	writer.Close()
+
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+
 	req, err := http.NewRequest("PUT", "/api/v1/users/profile", bytes.NewReader(update.Bytes()))
 	if err != nil {
 		t.Fatal(err)

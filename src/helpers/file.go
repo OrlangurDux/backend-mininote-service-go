@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"io"
+	"log"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -32,7 +33,11 @@ func UploadAvatar(file multipart.File, handler *multipart.FileHeader) (string, e
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
 	_, _ = io.Copy(f, file)
 
 	return shortFileAvatar, nil
