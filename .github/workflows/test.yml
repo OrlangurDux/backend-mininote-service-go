@@ -43,7 +43,7 @@ jobs:
         run: cd src/ && go vet ./...
 
       - name: Install staticcheck
-        run: cd src/ && go install honnef.co/go/tools/cmd/staticcheck@v0.47.0
+        run: cd src/ && go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
 
       - name: Run staticcheck
         run: cd src/ && staticcheck ./...
