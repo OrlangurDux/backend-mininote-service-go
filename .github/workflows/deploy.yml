@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        go-version: [ 1.23.x ]
+        go-version: [ 1.26.x ]
         os: [ ubuntu-latest ]
         mongodb-version: [ 6.0 ]
     runs-on: ${{ matrix.os }}
@@ -21,6 +21,12 @@ jobs:
         ports:
           - 1025:1025 # SMTP port
           - 8025:8025 # HTTP API/Web UI port
+        env:
+          MP_MAX_MESSAGES: 5000
+          MP_DATABASE: /data/mailpit.db
+          MP_SMTP_AUTH: "user:pass"
+          MP_SMTP_AUTH_ACCEPT_ANY: 1
+          MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
     steps:
       - name: set up go 1.19
