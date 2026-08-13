@@ -19,8 +19,9 @@ type UniversalDTO struct {
 
 // Request -> request message
 type Request struct {
-	Name  string `json:"name" example:"Jhon Doe"`
-	Phone string `json:"phone" example:"+79000000000"`
+	Name    string `json:"name" example:"Jhon Doe"`
+	Phone   string `json:"phone" example:"+79000000000"`
+	Message string `json:"message,omitempty" example:"Hello"`
 } //@name Request
 
 // Error -> model error

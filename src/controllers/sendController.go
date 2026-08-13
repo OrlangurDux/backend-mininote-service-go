@@ -3,18 +3,19 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	"io"
 	"net/http"
+	"reflect"
+	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/helpers"
 	"orlangur.link/services/mini.note/models"
-	"reflect"
-	"strings"
 )
 
-// SendRequest godoc
+// SendRequestEndpoint godoc
 // @Summary      Send request
 // @Description  Send message to email
 // @Tags         Request
@@ -27,7 +28,7 @@ import (
 // @Failure      500  {object}  models.UniversalDTO "error"
 // @Security BearerAuth
 // @Router       /send/request [post]
-func (c Controller) SendRequest(response http.ResponseWriter, request *http.Request) {
+func (c Controller) SendRequestEndpoint(response http.ResponseWriter, request *http.Request) {
 	var req models.Request
 	var errors models.Error
 	reqBody, _ := io.ReadAll(request.Body)

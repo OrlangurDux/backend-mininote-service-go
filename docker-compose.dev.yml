@@ -11,6 +11,23 @@ services:
 #      - ./.env.test:/app/.env
     depends_on:
       - mongo
+      - smtp
+    restart: unless-stopped
+
+  smtp:
+    image: axllent/mailpit:latest
+    container_name: 'dev-service-mini-note-smtp'
+    volumes:
+      - ./mailpit:/data
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+      - '1110:1110'
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
     restart: unless-stopped
 
   mongo:

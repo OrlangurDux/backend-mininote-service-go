@@ -1,9 +1,10 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"net/http"
 	"orlangur.link/services/mini.note/connectors"
 	"orlangur.link/services/mini.note/controllers"
 	middlewares "orlangur.link/services/mini.note/handlers"
@@ -29,6 +30,7 @@ func Routes() *mux.Router {
 	api := router.PathPrefix("/api/v1").Subrouter()
 	api.Use(middlewares.IsAuthorized)
 
+	api.HandleFunc("/send/request", c.SendRequestEndpoint).Methods("POST")
 	users := api.PathPrefix("/users").Subrouter()
 	users.HandleFunc("/profile", c.UserProfileReadEndpoint).Methods("GET")
 	users.HandleFunc("/profile", c.UserProfileUpdateEndpoint).Methods("PUT")
