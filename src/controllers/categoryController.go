@@ -152,10 +152,10 @@ func (c Controller) CategoryUpdateEndpoint(response http.ResponseWriter, request
 	var category models.Category
 	var iSort int
 	param := mux.Vars(request)
-	id, err := primitive.ObjectIDFromHex(param["id"])
+	id, _ := primitive.ObjectIDFromHex(param["id"])
 	collection := c.MG.Database("notes").Collection("categories")
 	filter := bson.M{"_id": id}
-	err = collection.FindOne(context.TODO(), filter).Decode(&category)
+	err := collection.FindOne(context.TODO(), filter).Decode(&category)
 	if err != nil {
 		errors.Code = 525
 		errors.Message = err.Error()

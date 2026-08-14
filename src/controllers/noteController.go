@@ -78,12 +78,10 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
-	matchStage := bson.D{}
-	//Test aggregate
+
+	matchStage := bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
 	if favorite {
 		matchStage = bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}, bson.M{"favorite": favorite}}}}}
-	} else {
-		matchStage = bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
 	}
 	unwindStage := bson.D{primitive.E{Key: "$unwind", Value: bson.M{"path": "$categories", "preserveNullAndEmptyArrays": true}}}
 	lookupStage := bson.D{primitive.E{Key: "$lookup", Value: bson.D{
