@@ -44,6 +44,7 @@ func Routes() *mux.Router {
 	notes.HandleFunc("/{id}", c.NoteReadEndpoint).Methods("GET")
 	notes.HandleFunc("/{id}", c.NoteUpdateEndpoint).Methods("PUT")
 	notes.HandleFunc("/{id}", c.NoteDeleteEndpoint).Methods("DELETE")
+	notes.HandleFunc("/favorite/{id}", c.NoteFavoriteEndpoint).Methods("PUT")
 
 	categories := api.PathPrefix("/categories").Subrouter()
 	categories.HandleFunc("", c.CategoryListEndpoint).Methods("GET")

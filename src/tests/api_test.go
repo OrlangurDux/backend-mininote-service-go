@@ -65,32 +65,6 @@ func TestUserLoginEndpoint(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	/*var token models.JWT
-	body := url.Values{}
-	body.Set("email", email)
-	body.Set("password", password)
-	req, err := http.NewRequest("POST", "/api/v1/users/login", strings.NewReader(body.Encode()))
-	if err != nil {
-		t.Fatal(err)
-	}
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(body.Encode())))
-	rr := httptest.NewRecorder()
-	client := routes.Routes()
-	client.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-	err = json.NewDecoder(rr.Body).Decode(&token)
-	if err != nil {
-		t.Errorf("error decode response: got %v",
-			rr.Body.String())
-	}
-	if !token.Success {
-		t.Errorf("handler returned unexpected body: got %v",
-			rr.Body.String())
-	}*/
 }
 
 func TestUserForgotEndpoint(t *testing.T) {
@@ -265,17 +239,6 @@ func TestUserPasswordUpdateEndpoint(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	/*update := &bytes.Buffer{}
-	writer := multipart.NewWriter(update)
-	fw, err := writer.CreateFormField("password")
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = io.Copy(fw, strings.NewReader(newPassword))
-	if err != nil {
-		t.Fatal(err)
-	}
-	writer.Close()*/
 	update := url.Values{}
 	update.Set("password", newPassword)
 	//req, err = http.NewRequest("PUT", "/api/v1/users/password", bytes.NewReader(update.Bytes()))
@@ -511,6 +474,34 @@ func TestNoteUpdateEndpoint(t *testing.T) {
 	req.Header.Add("Authorization", "Bearer "+jwt)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Content-Length", strconv.Itoa(len(body.Encode())))
+	rr := httptest.NewRecorder()
+	client := routes.Routes()
+	client.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+	// Check the response body is what we expect.
+	err = json.NewDecoder(rr.Body).Decode(&response)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !response.Success {
+		t.Errorf("handler returned unexpected body: got %v", response)
+	}
+}
+
+func TestNoteFavoriteEndpoint(t *testing.T) {
+	var response models.UniversalDTO
+	jwt, err := getJWTToken()
+	if err != nil {
+		t.Error(err)
+	}
+	req, err := http.NewRequest("PUT", "/api/v1/notes/favorite/"+noteID, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Add("Authorization", "Bearer "+jwt)
 	rr := httptest.NewRecorder()
 	client := routes.Routes()
 	client.ServeHTTP(rr, req)

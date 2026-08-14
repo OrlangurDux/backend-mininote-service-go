@@ -66,6 +66,7 @@ type Note struct {
 	} `json:"categories" bson:"categories"`
 	Title     string    `json:"title" bson:"title"`
 	Note      string    `json:"note" bson:"note"`
+	Favorite  bool      `json:"favorite" bson:"favorite"`
 	Status    string    `json:"status" bson:"status"`
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`

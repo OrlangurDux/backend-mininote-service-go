@@ -25,12 +25,13 @@ import (
 // @Produce      json
 // @Param        page	query	string	false	"Number page"
 // @Param        per_page	query	string 	false	"Number per page"
+// @Param        favorite	query	boolean 	false	"Favorite notes"
 // @Success      200  {object}  models.UniversalDTO{data=models.Notes} "Note items list"
 // @Failure      400  {object}  models.UniversalDTO "error"
 // @Failure      404  {object}  models.UniversalDTO "error"
 // @Failure      500  {object}  models.UniversalDTO "error"
 // @Security BearerAuth
-// @Router       /notes [get]
+// @Router       /notes [put]
 func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http.Request) {
 	var errors models.Error
 	var notes []*models.Note
@@ -43,8 +44,10 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
+
 	page, _ := strconv.ParseInt(request.URL.Query().Get("page"), 10, 32)
 	perPage, _ := strconv.ParseInt(request.URL.Query().Get("per_page"), 10, 32)
+	favorite, _ := strconv.ParseBool(request.URL.Query().Get("favorite"))
 	if perPage == 0 {
 		sPerPage := middlewares.DotEnvVariable("DEFAULT_PER_PAGE", "20")
 		if sPerPage != "" {
@@ -75,8 +78,13 @@ func (c Controller) NoteListEndpoint(response http.ResponseWriter, request *http
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
+	matchStage := bson.D{}
 	//Test aggregate
-	matchStage := bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
+	if favorite {
+		matchStage = bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}, bson.M{"favorite": favorite}}}}}
+	} else {
+		matchStage = bson.D{primitive.E{Key: "$match", Value: bson.M{"$and": bson.A{bson.M{"user_id": userID}}}}}
+	}
 	unwindStage := bson.D{primitive.E{Key: "$unwind", Value: bson.M{"path": "$categories", "preserveNullAndEmptyArrays": true}}}
 	lookupStage := bson.D{primitive.E{Key: "$lookup", Value: bson.D{
 		primitive.E{Key: "from", Value: "categories"},
@@ -146,15 +154,23 @@ func (c Controller) NoteReadEndpoint(response http.ResponseWriter, request *http
 	var errors models.Error
 	param := mux.Vars(request)
 	id, _ := primitive.ObjectIDFromHex(param["id"])
+	uid, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 302
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
 	collection := c.MG.Database("notes").Collection("notes")
-	filter := bson.M{"_id": id}
-	err := collection.FindOne(context.TODO(), filter).Decode(&note)
+	filter := bson.M{"_id": id, "user_id": uid}
+	err = collection.FindOne(context.TODO(), filter).Decode(&note)
 	if err != nil {
 		errors.Code = 300
 		errors.Message = err.Error()
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
+
 	middlewares.SuccessResponse(note, response)
 }
 
@@ -254,16 +270,43 @@ func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *ht
 	var record models.Note
 	param := mux.Vars(request)
 	id, err := primitive.ObjectIDFromHex(param["id"])
+
 	if err != nil {
 		errors.Code = 300
 		errors.Message = err.Error()
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
+
 	err = request.ParseForm()
 	if err != nil {
 		errors.Code = 310
 		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
+	collection := c.MG.Database("notes").Collection("notes")
+	filter := bson.M{"_id": id}
+	err = collection.FindOne(context.TODO(), filter).Decode(&record)
+	if err != nil {
+		errors.Code = 605
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
+	uid, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 610
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
+	if record.UserID != uid {
+		errors.Code = 615
+		errors.Message = "Note not found."
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
@@ -278,17 +321,7 @@ func (c Controller) NoteUpdateEndpoint(response http.ResponseWriter, request *ht
 	}
 
 	record.UpdatedAt = time.Now()
-	uid, err := helpers.GetUserID()
-	if err != nil {
-		errors.Code = 610
-		errors.Message = err.Error()
-		middlewares.ErrorResponse(errors, response)
-		return
-	}
-	record.UserID = uid
-	record.ID = id
 
-	collection := c.MG.Database("notes").Collection("notes")
 	update := bson.M{"$set": record}
 	_, err = collection.UpdateByID(context.TODO(), id, update)
 	if err != nil {
@@ -389,4 +422,55 @@ func (c Controller) NoteSearchEndpoint(response http.ResponseWriter, request *ht
 		return
 	}
 	middlewares.SuccessResponse(notes, response)
+}
+
+// NoteFavoriteEndpoint godoc
+// @Summary Favorite note
+// @Description Favrite note record
+// @Tags Note
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "note id"
+// @Success      200  {object}  models.UniversalDTO "Add/remove favorite note record"
+// @Failure      400  {object}  models.UniversalDTO "error"
+// @Failure      404  {object}  models.UniversalDTO "error"
+// @Failure      500  {object}  models.UniversalDTO "error"
+// @Router /notes/favorite/{id} [get]
+func (c Controller) NoteFavoriteEndpoint(response http.ResponseWriter, request *http.Request) {
+	var note models.Note
+	var errors models.Error
+	param := mux.Vars(request)
+	id, _ := primitive.ObjectIDFromHex(param["id"])
+	uid, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 301
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	collection := c.MG.Database("notes").Collection("notes")
+	filter := bson.M{"_id": id, "user_id": uid}
+	err = collection.FindOne(context.TODO(), filter).Decode(&note)
+	if err != nil {
+		errors.Code = 303
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	if note.Favorite {
+		note.Favorite = false
+	} else {
+		note.Favorite = true
+	}
+
+	update := bson.M{"$set": note}
+	_, err = collection.UpdateByID(context.TODO(), id, update)
+	if err != nil {
+		errors.Code = 306
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	success := fmt.Sprintf("Note ID: %s updated", id.Hex())
+	middlewares.SuccessResponse(success, response)
 }

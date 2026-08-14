@@ -325,7 +325,7 @@ const docTemplate = `{
             }
         },
         "/notes": {
-            "get": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -353,6 +353,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Number per page",
                         "name": "per_page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Favorite notes",
+                        "name": "favorite",
                         "in": "query"
                     }
                 ],
@@ -449,6 +455,58 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Create note item",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/notes/favorite/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Favrite note record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Favorite note",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "note id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add/remove favorite note record",
                         "schema": {
                             "$ref": "#/definitions/UniversalDTO"
                         }
@@ -1327,6 +1385,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "favorite": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1370,6 +1431,10 @@ const docTemplate = `{
         "Request": {
             "type": "object",
             "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Hello"
+                },
                 "name": {
                     "type": "string",
                     "example": "Jhon Doe"
@@ -1407,7 +1472,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1.2",
+	Version:          "0.1.11",
 	Host:             "localhost:9077",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},

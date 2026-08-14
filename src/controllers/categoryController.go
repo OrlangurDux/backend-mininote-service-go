@@ -3,14 +3,15 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/helpers"
 	"orlangur.link/services/mini.note/models"
-	"strconv"
 )
 
 // CategoryCreateEndpoint godoc
@@ -102,7 +103,6 @@ func (c Controller) CategoryCreateEndpoint(response http.ResponseWriter, request
 func (c Controller) CategoryReadEndpoint(response http.ResponseWriter, request *http.Request) {
 	var errors models.Error
 	var category models.Category
-
 	param := mux.Vars(request)
 	id, err := primitive.ObjectIDFromHex(param["id"])
 	if err != nil {
@@ -120,14 +120,14 @@ func (c Controller) CategoryReadEndpoint(response http.ResponseWriter, request *
 	}
 	filter := bson.M{"_id": id, "user_id": userID}
 	collection := c.MG.Database("notes").Collection("categories")
-	item := collection.FindOne(context.TODO(), filter)
-	err = item.Decode(&category)
+	err = collection.FindOne(context.TODO(), filter).Decode(&category)
 	if err != nil {
 		errors.Code = 600
 		errors.Message = err.Error()
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
+
 	middlewares.SuccessResponse(category, response)
 }
 
@@ -149,9 +149,13 @@ func (c Controller) CategoryReadEndpoint(response http.ResponseWriter, request *
 // @Router       /categories/{id} [put]
 func (c Controller) CategoryUpdateEndpoint(response http.ResponseWriter, request *http.Request) {
 	var errors models.Error
+	var category models.Category
 	var iSort int
 	param := mux.Vars(request)
 	id, err := primitive.ObjectIDFromHex(param["id"])
+	collection := c.MG.Database("notes").Collection("categories")
+	filter := bson.M{"_id": id}
+	err = collection.FindOne(context.TODO(), filter).Decode(&category)
 	if err != nil {
 		errors.Code = 525
 		errors.Message = err.Error()
@@ -162,6 +166,20 @@ func (c Controller) CategoryUpdateEndpoint(response http.ResponseWriter, request
 	if err != nil {
 		errors.Code = 530
 		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	uid, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 532
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
+	if category.UserID != uid {
+		errors.Code = 534
+		errors.Message = "Note not found."
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
@@ -177,16 +195,15 @@ func (c Controller) CategoryUpdateEndpoint(response http.ResponseWriter, request
 			return
 		}
 	}
-	data := bson.M{}
-	data["name"] = name
+
+	category.Name = name
 	if parentID != "" {
-		data["parent_id"] = parentID
+		category.ParentID, _ = primitive.ObjectIDFromHex(parentID)
 	}
 	if sort != "" {
-		data["sort"] = iSort
+		category.Sort = iSort
 	}
-	update := bson.M{"$set": data}
-	collection := c.MG.Database("notes").Collection("categories")
+	update := bson.M{"$set": category}
 	_, err = collection.UpdateByID(context.TODO(), id, update)
 	if err != nil {
 		errors.Code = 550

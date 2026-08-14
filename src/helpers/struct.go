@@ -19,10 +19,8 @@ func normalizeFieldName(name string) string {
 // SetField -> set value from value variable as key
 func SetField(obj interface{}, name string, value interface{}) error {
 	structValue := reflect.ValueOf(obj).Elem()
-
 	// Normalize the name for comparison
 	name = normalizeFieldName(name)
-
 	// Find the field by normalized name
 	var structFieldValue reflect.Value
 	for i := 0; i < structValue.NumField(); i++ {
@@ -32,15 +30,12 @@ func SetField(obj interface{}, name string, value interface{}) error {
 			break
 		}
 	}
-
 	if !structFieldValue.IsValid() {
 		return fmt.Errorf("no such field: %s in obj", name)
 	}
-
 	if !structFieldValue.CanSet() {
 		return fmt.Errorf("cannot set %s field value", name)
 	}
-
 	structFieldType := structFieldValue.Type()
 	val := reflect.ValueOf(value)
 

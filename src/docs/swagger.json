@@ -6,7 +6,7 @@
         "contact": {
             "name": "API Support"
         },
-        "version": "0.1.2"
+        "version": "0.1.11"
     },
     "host": "localhost:9077",
     "basePath": "/api/v1",
@@ -318,7 +318,7 @@
             }
         },
         "/notes": {
-            "get": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -346,6 +346,12 @@
                         "type": "string",
                         "description": "Number per page",
                         "name": "per_page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Favorite notes",
+                        "name": "favorite",
                         "in": "query"
                     }
                 ],
@@ -442,6 +448,58 @@
                 "responses": {
                     "200": {
                         "description": "Create note item",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/notes/favorite/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Favrite note record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Favorite note",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "note id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add/remove favorite note record",
                         "schema": {
                             "$ref": "#/definitions/UniversalDTO"
                         }
@@ -1320,6 +1378,9 @@
                 "created_at": {
                     "type": "string"
                 },
+                "favorite": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1363,6 +1424,10 @@
         "Request": {
             "type": "object",
             "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Hello"
+                },
                 "name": {
                     "type": "string",
                     "example": "Jhon Doe"
