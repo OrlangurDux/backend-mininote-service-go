@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	middlewares "orlangur.link/services/mini.note/handlers"
@@ -25,16 +24,15 @@ func GetUserID() (primitive.ObjectID, error) {
 
 // RandomString -> generate random string
 func RandomString(n int) string {
-	rand.Seed(time.Now().Unix())
 	var alphabet = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+")
 	var sb strings.Builder
+	sb.Grow(n)
 	alphabetSize := len(alphabet)
 	for i := 0; i < n; i++ {
 		ch := alphabet[rand.Intn(alphabetSize)]
 		sb.WriteRune(ch)
 	}
-	s := sb.String()
-	return s
+	return sb.String()
 }
 
 // RandomHash -> generate random hash from

@@ -564,7 +564,7 @@ func (c Controller) User2FAEnableEndpoint(response http.ResponseWriter, request 
 	}
 	status := request.PostFormValue("status")
 	bStatus, _ := strconv.ParseBool(status)
-	if bStatus && user.Is2FA == false {
+	if bStatus && !user.Is2FA {
 		key, err := totp.Generate(totp.GenerateOpts{
 			Issuer:      "MiniNoteApp",
 			AccountName: user.Email,
@@ -595,7 +595,7 @@ func (c Controller) User2FAEnableEndpoint(response http.ResponseWriter, request 
 		}
 		middlewares.SuccessResponse(data, response)
 	}
-	if !bStatus && user.Is2FA == true {
+	if !bStatus && user.Is2FA {
 		user.Is2FA = false
 		user.SecretOTP = ""
 		update := bson.M{"$set": user}
