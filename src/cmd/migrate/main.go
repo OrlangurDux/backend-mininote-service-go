@@ -4,6 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/fatih/color"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mongodb"
@@ -11,10 +16,6 @@ import (
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"os"
-	"strconv"
-	"strings"
 )
 
 // Env -> switch config file MODE variable
@@ -154,7 +155,7 @@ func DotEnvVariable(key string) string {
 		if err != nil {
 			err = godotenv.Load(name)
 			if err != nil {
-				log.Fatalf("Error loading " + name + " file")
+				log.Fatalf("Error loading %s file", name)
 				os.Exit(1)
 			}
 		}
