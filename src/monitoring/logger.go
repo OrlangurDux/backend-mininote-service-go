@@ -5,6 +5,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+// SetupLogger -> setup logger
 func SetupLogger() *logrus.Logger {
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{})

@@ -11,6 +11,7 @@ import (
 // Version print version with start program
 var Version = "development"
 
+// GetHost -> get host from config
 var GetHost func() string
 
 // UniversalDTO -> model for response json
@@ -114,6 +115,7 @@ type Categories struct {
 	return nil
 }*/
 
+// MarshalJSON -> marshal user
 func (u User) MarshalJSON() ([]byte, error) {
 	type Alias User
 

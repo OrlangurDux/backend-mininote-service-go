@@ -137,6 +137,7 @@ func GenerateJWT(user models.User) (models.JWT, error) {
 	return JWT, nil
 }
 
+// GenerateMFA -> generate mfa token
 func GenerateMFA(user models.User, rc *redis.Client) (models.JWT, error) {
 	var JWT models.JWT
 	mfaToken := md5.Sum([]byte(time.Now().String()))
