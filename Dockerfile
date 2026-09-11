@@ -1,4 +1,4 @@
-FROM golang:1.19.5-alpine AS build
+FROM golang:1.26.5-alpine AS build
 ARG VERSION_BIN=0.1.12
 ARG VERSION=0.1.0
 ARG BIN_NAME=mininote
