@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/pquerna/otp/totp"
 	"github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -134,25 +136,37 @@ func (c Controller) UserLoginEndpoint(response http.ResponseWriter, request *htt
 		return
 	}
 
-	jwt, err := middlewares.GenerateJWT(user)
-	if err != nil {
-		errors.Code = 60
-		errors.Message = err.Error()
-		middlewares.ErrorResponse(errors, response)
-		return
-	}
+	if user.Is2FA {
+		jwt, err := middlewares.GenerateMFA(user, c.RC)
+		if err != nil {
+			errors.Code = 52
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
+		middlewares.SuccessResponseJwt(jwt, response)
+	} else {
 
-	update := bson.M{"$set": bson.M{"authorized_at": time.Now()}}
-	_, err = collection.UpdateByID(context.TODO(), user.ID, update)
+		jwt, err := middlewares.GenerateJWT(user)
+		if err != nil {
+			errors.Code = 60
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
 
-	if err != nil {
-		errors.Code = 70
-		errors.Message = err.Error()
-		middlewares.ErrorResponse(errors, response)
-		return
+		update := bson.M{"$set": bson.M{"authorized_at": time.Now()}}
+		_, err = collection.UpdateByID(context.TODO(), user.ID, update)
+
+		if err != nil {
+			errors.Code = 70
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
+		c.logger.WithFields(logrus.Fields{"user": user}).Info("User authorization")
+		middlewares.SuccessResponseJwt(jwt, response)
 	}
-	c.logger.WithFields(logrus.Fields{"user": user}).Info("User authorization")
-	middlewares.SuccessResponseJwt(jwt, response)
 }
 
 // UserForgotEndpoint godoc
@@ -505,4 +519,158 @@ func (c Controller) UserPasswordUpdateEndpoint(response http.ResponseWriter, req
 		return
 	}
 	middlewares.SuccessResponse("Update password success", response)
+}
+
+// User2FAEnableEndpoint godoc
+// @Summary      User 2FA
+// @Description  Enable/Disable user 2FA
+// @Tags         User
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        status   formData  boolean true  "Status"
+// @Success      200  {object}  models.UniversalDTO "ok"
+// @Failure      400  {object}  models.UniversalDTO "error"
+// @Failure      404  {object}  models.UniversalDTO "error"
+// @Failure      500  {object}  models.UniversalDTO "error"
+// @Security BearerAuth
+// @Router       /users/tfa [put]
+func (c Controller) User2FAEnableEndpoint(response http.ResponseWriter, request *http.Request) {
+	var errors models.Error
+	var user models.User
+	err := request.ParseForm()
+	if err != nil {
+		errors.Code = 152
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
+	userID, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 154
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
+	collection := c.MG.Database("notes").Collection("users")
+	filter := bson.M{"_id": userID, "active": true}
+	err = collection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		errors.Code = 156
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	status := request.PostFormValue("status")
+	bStatus, _ := strconv.ParseBool(status)
+	if bStatus && user.Is2FA == false {
+		key, err := totp.Generate(totp.GenerateOpts{
+			Issuer:      "MiniNoteApp",
+			AccountName: user.Email,
+		})
+		if err != nil {
+			errors.Code = 158
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
+		secret := key.Secret()
+		user.Is2FA = true
+		user.SecretOTP = secret
+		update := bson.M{"$set": user}
+		_, err = collection.UpdateByID(context.TODO(), userID, update)
+		if err != nil {
+			errors.Code = 162
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
+		data := struct {
+			Message string `json:"msg"`
+			URL     string `json:"url"`
+		}{
+			Message: "2FA enabled",
+			URL:     key.URL(),
+		}
+		middlewares.SuccessResponse(data, response)
+	}
+	if !bStatus && user.Is2FA == true {
+		user.Is2FA = false
+		user.SecretOTP = ""
+		update := bson.M{"$set": user}
+		_, err = collection.UpdateByID(context.TODO(), userID, update)
+		if err != nil {
+			errors.Code = 164
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
+		middlewares.SuccessResponse("2FA disabled", response)
+	}
+}
+
+// User2FAVerifyEndpoint godoc
+// @Summary      User 2FA
+// @Description  Use token and code for 2FA
+// @Tags         User
+// @Accept       x-www-form-urlencoded
+// @Produce      json
+// @Param        token   formData  string true  "MFA Token"
+// @Param        code   formData  string true  "2FA Code"
+// @Success      200  {object}  models.UniversalDTO "ok"
+// @Failure      400  {object}  models.UniversalDTO "error"
+// @Failure      404  {object}  models.UniversalDTO "error"
+// @Failure      500  {object}  models.UniversalDTO "error"
+// @Router       /users/otp [post]
+func (c Controller) User2FAVerifyEndpoint(response http.ResponseWriter, request *http.Request) {
+	var errors models.Error
+	var user models.User
+	err := request.ParseForm()
+	if err != nil {
+		errors.Code = 171
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
+	token := request.PostFormValue("token")
+	code := request.PostFormValue("code")
+	record := c.RC.Get(context.TODO(), token)
+
+	collection := c.MG.Database("notes").Collection("users")
+	id, _ := primitive.ObjectIDFromHex(record.Val())
+	filter := bson.M{"_id": id, "active": true}
+	err = collection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		errors.Code = 173
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+	if totp.Validate(code, user.SecretOTP) {
+		jwt, err := middlewares.GenerateJWT(user)
+		if err != nil {
+			errors.Code = 176
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
+
+		update := bson.M{"$set": bson.M{"authorized_at": time.Now()}}
+		_, err = collection.UpdateByID(context.TODO(), user.ID, update)
+
+		if err != nil {
+			errors.Code = 178
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
+		c.logger.WithFields(logrus.Fields{"user": user}).Info("User authorization")
+		middlewares.SuccessResponseJwt(jwt, response)
+	} else {
+		errors.Code = 182
+		errors.Message = "Incorrect otp code"
+		middlewares.ErrorResponse(errors, response)
+	}
 }

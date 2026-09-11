@@ -740,6 +740,44 @@ paths:
       summary: Login user account
       tags:
       - User
+  /users/otp:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Use token and code for 2FA
+      parameters:
+      - description: MFA Token
+        in: formData
+        name: token
+        required: true
+        type: string
+      - description: 2FA Code
+        in: formData
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      summary: User 2FA
+      tags:
+      - User
   /users/password:
     put:
       consumes:
@@ -903,6 +941,41 @@ paths:
           schema:
             $ref: '#/definitions/UniversalDTO'
       summary: Register user account
+      tags:
+      - User
+  /users/tfa:
+    put:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Enable/Disable user 2FA
+      parameters:
+      - description: Status
+        in: formData
+        name: status
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "400":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "404":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+        "500":
+          description: error
+          schema:
+            $ref: '#/definitions/UniversalDTO'
+      security:
+      - BearerAuth: []
+      summary: User 2FA
       tags:
       - User
   /version:

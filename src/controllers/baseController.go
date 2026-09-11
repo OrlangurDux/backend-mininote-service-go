@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	middlewares "orlangur.link/services/mini.note/handlers"
@@ -12,15 +13,16 @@ import (
 // Controller -> base controller
 type Controller struct {
 	MG     *mongo.Client
+	RC     *redis.Client
 	logger *logrus.Logger
 }
 
 // BaseController -> base controller
-func BaseController(mg *mongo.Client, logger *logrus.Logger) Controller {
+func BaseController(mg *mongo.Client, rc *redis.Client, logger *logrus.Logger) Controller {
 	models.GetHost = func() string {
 		return middlewares.DotEnvVariable("HOST", "localhost:9077")
 	}
-	return Controller{mg, logger}
+	return Controller{mg, rc, logger}
 }
 
 // GetVersion godoc

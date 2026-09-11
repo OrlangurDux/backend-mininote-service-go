@@ -26,6 +26,16 @@ jobs:
           MP_SMTP_AUTH_ACCEPT_ANY: 1
           MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: set up go 1.19
         uses: actions/setup-go@v2

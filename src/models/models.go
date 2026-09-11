@@ -1,9 +1,10 @@
 package models
 
 import (
+	"encoding/json"
+	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -50,6 +51,8 @@ type User struct {
 	Avatar       string             `json:"avatar" bson:"avatar"`
 	Active       bool               `json:"active" bson:"active"`
 	RestoreToken string             `json:"restore_token" bson:"restore_token"`
+	Is2FA        bool               `json:"is_2fa" bson:"is_2fa"`
+	SecretOTP    string             `json:"secret_otp" bson:"secret_otp"`
 	CreatedAt    time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt    time.Time          `json:"updated_at" bson:"updated_at"`
 	AuthorizedAt time.Time          `json:"authorized_at" bson:"authorized_at"`
@@ -95,7 +98,7 @@ type Categories struct {
 	Items []*Category `json:"items"`
 } //@name Categories
 
-func (u *User) UnmarshalBSON(data []byte) error {
+/*func (u *User) UnmarshalBSON(data []byte) error {
 	type Alias User
 	aux := &struct {
 		*Alias `bson:",inline"`
@@ -109,4 +112,25 @@ func (u *User) UnmarshalBSON(data []byte) error {
 	host := GetHost()
 	u.Avatar = host + u.Avatar
 	return nil
+}*/
+
+func (u User) MarshalJSON() ([]byte, error) {
+	type Alias User
+
+	avatar := u.Avatar
+
+	if avatar != "" && GetHost != nil {
+		host := strings.TrimRight(GetHost(), "/")
+		path := strings.TrimLeft(avatar, "/")
+
+		avatar = host + "/" + path
+	}
+
+	return json.Marshal(struct {
+		Alias
+		Avatar string `json:"avatar"`
+	}{
+		Alias:  Alias(u),
+		Avatar: avatar,
+	})
 }

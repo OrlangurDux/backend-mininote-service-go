@@ -1004,6 +1004,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/otp": {
+            "post": {
+                "description": "Use token and code for 2FA",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User 2FA",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MFA Token",
+                        "name": "token",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "2FA Code",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/users/password": {
             "put": {
                 "security": [
@@ -1229,6 +1286,61 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Password",
                         "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/UniversalDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/tfa": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Enable/Disable user 2FA",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User 2FA",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Status",
+                        "name": "status",
                         "in": "formData",
                         "required": true
                     }

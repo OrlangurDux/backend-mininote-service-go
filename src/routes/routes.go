@@ -15,8 +15,9 @@ import (
 func Routes() *mux.Router {
 	middlewares.LoadDotEnv()
 	MG := connectors.DbconnectMG()
+	RC := connectors.RedisConnect()
 	LG := monitoring.SetupLogger()
-	c := controllers.BaseController(MG, LG)
+	c := controllers.BaseController(MG, RC, LG)
 	router := mux.NewRouter()
 
 	apiNotAuth := router.PathPrefix("/api/v1").Subrouter()
@@ -26,6 +27,7 @@ func Routes() *mux.Router {
 	userNotAuth.HandleFunc("/register", c.UserRegisterEndpoint).Methods("POST")
 	userNotAuth.HandleFunc("/forgot", c.UserForgotEndpoint).Methods("POST")
 	userNotAuth.HandleFunc("/check", c.UserCheckByEmailEndpoint).Methods("POST")
+	userNotAuth.HandleFunc("/otp", c.User2FAVerifyEndpoint).Methods("POST")
 
 	api := router.PathPrefix("/api/v1").Subrouter()
 	api.Use(middlewares.IsAuthorized)
@@ -36,6 +38,7 @@ func Routes() *mux.Router {
 	users.HandleFunc("/profile", c.UserProfileUpdateEndpoint).Methods("PUT")
 	users.HandleFunc("/profile", c.UserProfileDeleteEndpoint).Methods("DELETE")
 	users.HandleFunc("/password", c.UserPasswordUpdateEndpoint).Methods("PUT")
+	users.HandleFunc("/tfa", c.User2FAEnableEndpoint).Methods("PUT")
 
 	notes := api.PathPrefix("/notes").Subrouter()
 	notes.HandleFunc("", c.NoteListEndpoint).Methods("GET")

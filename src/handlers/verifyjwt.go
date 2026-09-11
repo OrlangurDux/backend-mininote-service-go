@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"context"
+	"crypto/md5"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -8,6 +10,7 @@ import (
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v4"
+	"github.com/redis/go-redis/v9"
 	"orlangur.link/services/mini.note/models"
 )
 
@@ -129,6 +132,22 @@ func GenerateJWT(user models.User) (models.JWT, error) {
 	JWT.AccessToken = tokenString
 	JWT.ExpiresIn = expirationTime
 	JWT.TokenType = "Bearer"
+	JWT.Success = true
+
+	return JWT, nil
+}
+
+func GenerateMFA(user models.User, rc *redis.Client) (models.JWT, error) {
+	var JWT models.JWT
+	mfaToken := md5.Sum([]byte(time.Now().String()))
+	accessToken := fmt.Sprintf("%x", mfaToken)
+	ttl := 60 * time.Second
+	id := user.ID.Hex()
+	rc.Set(context.TODO(), accessToken, id, ttl)
+
+	JWT.AccessToken = accessToken
+	JWT.ExpiresIn = int64(ttl.Seconds())
+	JWT.TokenType = "mfa"
 	JWT.Success = true
 
 	return JWT, nil
