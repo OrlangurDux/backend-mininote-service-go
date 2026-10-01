@@ -19,11 +19,21 @@ func getClientIP(r *http.Request) (string, error) {
 	if cfIP := r.Header.Get("CF-Connecting-IP"); cfIP != "" {
 		return httprate.CanonicalizeIP(strings.TrimSpace(cfIP)), nil
 	}
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		return "", err
+
+	remoteAddr := strings.TrimSpace(r.RemoteAddr)
+	if remoteAddr == "" {
+		return "127.0.0.1", nil
 	}
-	return httprate.CanonicalizeIP(ip), nil
+
+	if (strings.LastIndex(remoteAddr, ":")) > strings.LastIndex(remoteAddr, "]") {
+		ip, _, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			return "", err
+		}
+		return httprate.CanonicalizeIP(ip), nil
+	}
+
+	return httprate.CanonicalizeIP(remoteAddr), nil
 }
 
 // Routes -> define endpoints
