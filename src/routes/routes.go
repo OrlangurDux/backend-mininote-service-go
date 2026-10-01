@@ -1,8 +1,12 @@
 package routes
 
 import (
+	"net"
 	"net/http"
+	"strings"
+	"time"
 
+	"github.com/go-chi/httprate"
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"orlangur.link/services/mini.note/connectors"
@@ -10,6 +14,17 @@ import (
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/monitoring"
 )
+
+func getClientIP(r *http.Request) (string, error) {
+	if cfIP := r.Header.Get("CF-Connecting-IP"); cfIP != "" {
+		return httprate.CanonicalizeIP(strings.TrimSpace(cfIP)), nil
+	}
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return "", err
+	}
+	return httprate.CanonicalizeIP(ip), nil
+}
 
 // Routes -> define endpoints
 func Routes() *mux.Router {
@@ -23,6 +38,7 @@ func Routes() *mux.Router {
 	apiNotAuth := router.PathPrefix("/api/v1").Subrouter()
 	apiNotAuth.HandleFunc("/version", c.GetVersion).Methods("GET")
 	userNotAuth := apiNotAuth.PathPrefix("/users").Subrouter()
+	userNotAuth.Use(httprate.LimitBy(5, 1*time.Second, getClientIP))
 	userNotAuth.HandleFunc("/login", c.UserLoginEndpoint).Methods("POST")
 	userNotAuth.HandleFunc("/register", c.UserRegisterEndpoint).Methods("POST")
 	userNotAuth.HandleFunc("/forgot", c.UserForgotEndpoint).Methods("POST")

@@ -51,9 +51,9 @@ type User struct {
 	Password     string             `json:"-" bson:"password"`
 	Avatar       string             `json:"avatar" bson:"avatar"`
 	Active       bool               `json:"active" bson:"active"`
-	RestoreToken string             `json:"restore_token" bson:"restore_token"`
+	RestoreToken string             `json:"-" bson:"restore_token"`
 	Is2FA        bool               `json:"is_2fa" bson:"is_2fa"`
-	SecretOTP    string             `json:"secret_otp" bson:"secret_otp"`
+	SecretOTP    string             `json:"-" bson:"secret_otp"`
 	CreatedAt    time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt    time.Time          `json:"updated_at" bson:"updated_at"`
 	AuthorizedAt time.Time          `json:"authorized_at" bson:"authorized_at"`
