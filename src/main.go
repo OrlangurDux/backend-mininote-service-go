@@ -22,7 +22,7 @@ import (
 
 // @contact.name API Support
 
-// @host localhost:9077
+// host localhost:9077
 // @BasePath /api/v1
 
 // @securityDefinitions.apikey BearerAuth
