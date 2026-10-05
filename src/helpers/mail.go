@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"mime"
 	"net/smtp"
 
 	middlewares "orlangur.link/services/mini.note/handlers"
@@ -13,7 +14,13 @@ func Mail(to []string, subject string, message string) error {
 	password := middlewares.DotEnvVariable("SMTP_PASSWORD", "")
 	port := middlewares.DotEnvVariable("SMTP_PORT", "25")
 
-	body := "Subject:" + subject + "\r\n\r\n" + message
+	//body := "Subject:" + subject + "\r\n\r\n" + message
+	body := "" +
+		"MIME-Version: 1.0\r\n" +
+		"Content-Type: text/html; charset=UTF-8\r\n" +
+		"Subject: " + mime.QEncoding.Encode("UTF-8", subject) + "\r\n" +
+		"\r\n" +
+		message
 	bBody := []byte(body)
 	auth := smtp.PlainAuth("", login, password, host)
 

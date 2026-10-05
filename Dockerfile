@@ -1,5 +1,5 @@
 FROM golang:1.26.5-alpine AS build
-ARG VERSION_BIN=0.1.13
+ARG VERSION_BIN=0.1.14
 ARG VERSION=0.1.0
 ARG BIN_NAME=mininote
 RUN apk add gcc musl-dev
@@ -11,6 +11,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-X main.Version=${VERSION}" -o "migrate" ./
 
 FROM scratch AS bin
 ARG BIN_NAME=mininote
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /src/"${BIN_NAME}" /"${BIN_NAME}"
 COPY --from=build /src/migrate /migrate
 COPY --from=build /src/migrations /migrations
