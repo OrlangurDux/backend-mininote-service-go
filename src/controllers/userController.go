@@ -220,21 +220,30 @@ func (c Controller) UserForgotEndpoint(response http.ResponseWriter, request *ht
 		}
 		responseMessage = "Update password success"
 	} else if email != "" {
-		//restoreToken = helpers.RandomString(32)
 		restoreToken = helpers.RandomHash("")
 
-		subject := fmt.Sprintf("Token fo recovery password %s", middlewares.DotEnvVariable("HOST", "http://localhost:9077"))
-		message := fmt.Sprintf("Link for recovery password %s/forgot/?token=%s", middlewares.DotEnvVariable("HOST", "http://localhost:9077"), restoreToken)
+		locale := helpers.LocaleFromRequest(request)
+		data := models.RecoveryPasswordData{
+			Name:        user.Name,
+			RecoveryURL: fmt.Sprintf("%s/forgot/?token=%s", middlewares.DotEnvVariable("HOST", "http://localhost:9077"), restoreToken),
+		}
+		rendered, err := helpers.RecoveryPasswordData(locale, data)
+		if err != nil {
+			errors.Code = 78
+			errors.Message = err.Error()
+			middlewares.ErrorResponse(errors, response)
+			return
+		}
 		filter := bson.M{"email": email}
 		update := bson.M{"$set": bson.M{"restore_token": restoreToken}}
-		err := collection.FindOneAndUpdate(context.TODO(), filter, update).Decode(&user)
+		err = collection.FindOneAndUpdate(context.TODO(), filter, update).Decode(&user)
 		if err != nil {
 			errors.Code = 75
 			errors.Message = err.Error()
 			middlewares.ErrorResponse(errors, response)
 			return
 		}
-		err = helpers.Mail([]string{email}, subject, message)
+		err = helpers.Mail([]string{email}, rendered.Subject, rendered.Body)
 		if err != nil {
 			errors.Code = 76
 			errors.Message = err.Error()

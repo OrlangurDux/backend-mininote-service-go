@@ -70,15 +70,21 @@ func (c Controller) SendRequestEndpoint(response http.ResponseWriter, request *h
 			}
 		}
 	}
-	subject := middlewares.DotEnvVariable("SMTP_SUBJECT", "")
-	message := middlewares.DotEnvVariable("SMTP_MESSAGE", "")
-	unpackReq := reflect.ValueOf(req)
-	unpackKeys := unpackReq.Type()
-	for i := 0; i < unpackReq.NumField(); i++ {
-		message = strings.ReplaceAll(message, "#"+strings.ToLower(unpackKeys.Field(i).Name)+"#", unpackReq.Field(i).String())
-	}
+
 	to := []string{middlewares.DotEnvVariable("SMTP_TO", "")}
-	err = helpers.Mail(to, subject, message)
+	locale := helpers.LocaleFromRequest(request)
+	rendered, err := helpers.RenderContact(locale, models.ContactData{
+		Name:    req.Name,
+		Phone:   req.Phone,
+		Message: req.Message,
+	})
+	if err != nil {
+		errors.Code = 219
+		errors.Message = err.Error()
+		middlewares.ServerErrResponse(errors, response)
+		return
+	}
+	err = helpers.Mail(to, rendered.Subject, rendered.Body)
 	if err != nil {
 		errors.Code = 220
 		errors.Message = err.Error()
