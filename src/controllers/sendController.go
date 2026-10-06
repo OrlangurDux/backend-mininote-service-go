@@ -73,11 +73,7 @@ func (c Controller) SendRequestEndpoint(response http.ResponseWriter, request *h
 
 	to := []string{middlewares.DotEnvVariable("SMTP_TO", "")}
 	locale := helpers.LocaleFromRequest(request)
-	rendered, err := helpers.RenderContact(locale, models.ContactData{
-		Name:    req.Name,
-		Phone:   req.Phone,
-		Message: req.Message,
-	})
+	rendered, err := helpers.RenderContact(locale, models.ContactData(req))
 	if err != nil {
 		errors.Code = 219
 		errors.Message = err.Error()
