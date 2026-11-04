@@ -513,6 +513,7 @@ func (c Controller) UserProfileDeleteEndpoint(response http.ResponseWriter, requ
 // @Security BearerAuth
 // @Router       /users/password [put]
 func (c Controller) UserPasswordUpdateEndpoint(response http.ResponseWriter, request *http.Request) {
+	const minEntropyBits = 60
 	var errors models.Error
 	err := request.ParseForm()
 	if err != nil {
@@ -522,6 +523,13 @@ func (c Controller) UserPasswordUpdateEndpoint(response http.ResponseWriter, req
 		return
 	}
 	password := request.PostFormValue("password")
+	err = passwordValidator.Validate(password, minEntropyBits)
+	if err != nil {
+		errors.Code = 132
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
 
 	userID, err := helpers.GetUserID()
 	if err != nil {

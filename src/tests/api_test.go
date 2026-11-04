@@ -22,7 +22,7 @@ var (
 	email           = "test@test.loc"
 	password        = "dfhsafuif$&^$%47465klsfhldfSDKHSDH"
 	name            = "Test"
-	newPassword     = "hjfglkfdjfh%&*&%*&ksfkhdfd6868363KHOYLH"
+	newPassword     = "dfhsafuif$&^$%47465klsfhldfSDKHSDH"
 	categoryName    = "Parent Category"
 	categoryUpdName = "Parent Category update"
 	categorySort    = "10"
