@@ -20,9 +20,9 @@ import (
 
 var (
 	email           = "test@test.loc"
-	password        = "12345678"
+	password        = "dfhsafuif$&^$%47465klsfhldfSDKHSDH"
 	name            = "Test"
-	newPassword     = "12345678"
+	newPassword     = "hjfglkfdjfh%&*&%*&ksfkhdfd6868363KHOYLH"
 	categoryName    = "Parent Category"
 	categoryUpdName = "Parent Category update"
 	categorySort    = "10"

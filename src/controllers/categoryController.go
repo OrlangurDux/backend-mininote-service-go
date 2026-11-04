@@ -179,7 +179,7 @@ func (c Controller) CategoryUpdateEndpoint(response http.ResponseWriter, request
 
 	if category.UserID != uid {
 		errors.Code = 534
-		errors.Message = "Note not found."
+		errors.Message = "Access denied for this category"
 		middlewares.ErrorResponse(errors, response)
 		return
 	}
@@ -238,8 +238,16 @@ func (c Controller) CategoryDeleteEndpoint(response http.ResponseWriter, request
 		return
 	}
 
+	uid, err := helpers.GetUserID()
+	if err != nil {
+		errors.Code = 532
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
+
 	collection := c.MG.Database("notes").Collection("categories")
-	del := bson.M{"_id": id}
+	del := bson.M{"_id": id, "user_id": uid}
 	_, err = collection.DeleteOne(context.TODO(), del)
 	if err != nil {
 		errors.Code = 570

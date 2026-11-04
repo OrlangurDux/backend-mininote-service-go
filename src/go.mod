@@ -15,6 +15,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/swaggo/http-swagger v1.2.8
 	github.com/swaggo/swag v1.8.2
+	github.com/wagslane/go-password-validator v0.3.0
 	go.mongodb.org/mongo-driver v1.9.1
 	golang.org/x/text v0.3.7
 	gopkg.in/go-playground/validator.v9 v9.31.0

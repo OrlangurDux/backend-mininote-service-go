@@ -12,12 +12,13 @@ import (
 
 	"github.com/pquerna/otp/totp"
 	"github.com/sirupsen/logrus"
+	passwordValidator "github.com/wagslane/go-password-validator"
+	"orlangur.link/services/mini.note/models"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	middlewares "orlangur.link/services/mini.note/handlers"
 	"orlangur.link/services/mini.note/helpers"
-	"orlangur.link/services/mini.note/models"
 )
 
 // UserRegisterEndpoint godoc
@@ -34,6 +35,7 @@ import (
 // @Failure      500  {object}  models.UniversalDTO "error"
 // @Router       /users/register [post]
 func (c Controller) UserRegisterEndpoint(response http.ResponseWriter, request *http.Request) {
+	const minEntropyBits = 60
 	var user models.User
 	var errors models.Error
 	err := request.ParseForm()
@@ -46,8 +48,20 @@ func (c Controller) UserRegisterEndpoint(response http.ResponseWriter, request *
 	}
 
 	email := request.PostFormValue("email")
+	if email == "" {
+		errors.Code = 7
+		errors.Message = "Email is required"
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
 	password := request.PostFormValue("password")
-
+	err = passwordValidator.Validate(password, minEntropyBits)
+	if err != nil {
+		errors.Code = 9
+		errors.Message = err.Error()
+		middlewares.ErrorResponse(errors, response)
+		return
+	}
 	filter := bson.M{"email": email}
 	collection := c.MG.Database("notes").Collection("users")
 
